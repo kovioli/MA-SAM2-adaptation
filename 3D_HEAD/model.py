@@ -11,6 +11,7 @@ from torchvision.transforms import ToTensor
 
 from sam2.build_sam import build_sam2
 from sam2.utils.transforms import SAM2Transforms
+import torch.nn.functional as F
 
 DEVICE = "cuda:1"
 
@@ -45,18 +46,19 @@ class SAM2_MODEL(nn.Module):
             max_sprinkle_area=0.0,
         )
         self.se, self.de = self.create_point_embeddings()
-        self._bb_feat_sizes = [
-            (256, 256),
-            (128, 128),
-            (64, 64),
-        ]
+        # self._bb_feat_sizes = [
+        #     (256, 256),
+        #     (128, 128),
+        #     (64, 64),
+        # ]
+        self.image_size=1024
     def forward(self, x, memory):
         # encode current image
         # if memory present: encode image+memory (pix_feat,)
         backbone_out = self.model.forward_image(x)
         # dict_keys(['vision_features', 'vision_pos_enc', 'backbone_fpn'])
         backbone_out, vision_feats, vision_pos_embeds, feat_sizes = self.model._prepare_backbone_features(backbone_out)# last: feat_sizes
-        image_embeddings = None
+        image_embeddings = None # TODO: encode image
         if memory:
             B = vision_feats[-1].size(1)  # batch size on this frame
             H, W = feat_sizes[-1]
@@ -67,17 +69,46 @@ class SAM2_MODEL(nn.Module):
                 memory=memory,
                 memory_pos=None
             )
-            image_embeddings = pix_feat_with_mem.permute(1, 2, 0).view(B, C, H, W)
+            image_embeddings = pix_feat_with_mem#.permute(1, 2, 0).view(B, C, H, W)
+        else:
+            vision_feats[-1] = vision_feats[-1] + self.model.no_mem_embed
+            feats = [
+                feat.permute(1, 2, 0).view(1, -1, *feat_size)
+                for feat, feat_size in zip(vision_feats[::-1], feat_sizes[::-1])
+            ]
+            image_embeddings = feats[-1][-1].unsqueeze(0) # low resolution features # TODO: check if double [-1] is needed
+
             
-        pred, _, _, _ = self.model.sam_mask_decoder(
+        if len(vision_feats) > 1:
+            high_res_features = [
+                x.permute(1, 2, 0).view(x.size(1), x.size(2), *s)
+                for x, s in zip(vision_feats[:-1], feat_sizes[:-1])
+            ]
+        else:
+            high_res_features = None
+        pred, _, _, _ = self.model.sam_mask_decoder( # returns low_res_masks, ious, sam_output_tokens, object_score_logits
             image_embeddings=image_embeddings,
             image_pe=self.model.sam_prompt_encoder.get_dense_pe(),
             sparse_prompt_embeddings=self.se,
             dense_prompt_embeddings=self.de,
             multimask_output=False,
             repeat_image=False,
-            high_res_features=None,
+            high_res_features=high_res_features, # TODO
         )
+        high_res_masks = F.interpolate(
+            pred,
+            size=(self.image_size, self.image_size),
+            mode="bilinear",
+            align_corners=False,
+        )
+        # create memory
+        maskmem_features, maskmem_pos_enc = self.model._encode_new_memory(
+            current_vision_feats=vision_feats,
+            feat_sizes=feat_sizes,
+            pred_mask_high_res=high_res_masks
+            is_mask_from_pts=False
+        )
+        
     
     def create_point_embeddings(self):
         point_grids = build_all_layer_point_grids(

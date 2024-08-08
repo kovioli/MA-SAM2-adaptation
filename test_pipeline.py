@@ -6,8 +6,18 @@ from PIL import Image
 from sam2.sam2_image_predictor import SAM2ImagePredictor
 from sam2.build_sam import build_sam2
 from typing import List
-DEVICE = 'cuda:3'
+from sam2.utils.transforms import SAM2Transforms
+DEVICE = 'cuda:1'
 # %%
+sam2_cp = "/oliver/SAM2/checkpoints/sam2_hiera_tiny.pt"
+model_cfg = "sam2_hiera_t.yaml"
+model = build_sam2(model_cfg, sam2_cp, device=DEVICE)
+_transforms = SAM2Transforms(
+    resolution=1024,
+    mask_threshold=0.0,
+    max_hole_area=0.0,
+    max_sprinkle_area=0.0,
+)
 def build_all_layer_point_grids(
     n_per_side: int, n_layers: int, scale_per_layer: int
 ) -> List[np.ndarray]:
@@ -26,17 +36,47 @@ def build_point_grid(n_per_side: int) -> np.ndarray:
     points_y = np.tile(points_one_side[:, None], (1, n_per_side))
     points = np.stack([points_x, points_y], axis=-1).reshape(-1, 2)
     return points
+
+def create_point_embeddings():
+    point_grids = build_all_layer_point_grids(
+        n_per_side=32, n_layers=0, scale_per_layer=1
+    )
+    point_coords = point_grids[0] * 1024
+    point_labels = np.array([1] * len(point_coords))
+    point_coords = torch.as_tensor(point_coords, dtype=torch.float, device=DEVICE)
+    point_labels = torch.as_tensor(point_labels, dtype=torch.int, device=DEVICE)
+    unnorm_coords = _transforms.transform_coords(
+        point_coords, normalize=True, orig_hw=[1024, 1024]
+    )
+    if len(unnorm_coords.shape) == 2:
+        unnorm_coords, labels = unnorm_coords[None, ...], point_labels[None, ...]
+    concat_points = (unnorm_coords, labels)
+    return model.sam_prompt_encoder(concat_points, boxes=None, masks=None)
 # %%
-image = Image.open('0100.png')
+image = Image.open('/oliver/SAM2/0100.png')
 image = image.resize((1024, 1024))
 image = np.array(image.convert("RGB"))
-point_grids = build_all_layer_point_grids(
-    n_per_side=32, n_layers=0, scale_per_layer=1
-)
-point_coords = point_grids[0] * 1024
-point_labels = np.array([1] * len(point_coords))
+image = _transforms(image)
+image = image[None, ...].to(DEVICE)
 
-
+# %%
+with torch.no_grad():
+    backbone_out = model.forward_image(image)
+backbone_out, vision_feats, vision_pos_embeds, feat_sizes = model._prepare_backbone_features(backbone_out)
+vision_feats[-1] = vision_feats[-1] + model.no_mem_embed
+feats = [
+    feat.permute(1, 2, 0).view(1, -1, *feat_size)
+    for feat, feat_size in zip(vision_feats[::-1], feat_sizes[::-1])
+]
+if len(vision_feats) > 1:
+    high_res_features = [
+        x.permute(1, 2, 0).view(x.size(1), x.size(2), *s)
+        for x, s in zip(vision_feats[:-1], feat_sizes[:-1])
+    ]
+else:
+    high_res_features = None
+image_embeddings = feats[-1][-1].unsqueeze(0)
+se, de = create_point_embeddings()
 # %%
 sam2_cp = "/oliver/SAM2/checkpoints/sam2_hiera_tiny.pt"
 model_cfg = "sam2_hiera_t.yaml"
