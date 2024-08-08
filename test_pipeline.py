@@ -7,6 +7,7 @@ from sam2.sam2_image_predictor import SAM2ImagePredictor
 from sam2.build_sam import build_sam2
 from typing import List
 from sam2.utils.transforms import SAM2Transforms
+import torch.nn.functional as F
 DEVICE = 'cuda:1'
 # %%
 sam2_cp = "/oliver/SAM2/checkpoints/sam2_hiera_tiny.pt"
@@ -53,11 +54,18 @@ def create_point_embeddings():
     concat_points = (unnorm_coords, labels)
     return model.sam_prompt_encoder(concat_points, boxes=None, masks=None)
 # %%
-image = Image.open('/oliver/SAM2/0100.png')
+# image = Image.open('/oliver/SAM2/0100.png')
+image = Image.open('/oliver/SAM2/dog.jpg')
 image = image.resize((1024, 1024))
 image = np.array(image.convert("RGB"))
 image = _transforms(image)
 image = image[None, ...].to(DEVICE)
+_bb_feat_sizes = [
+    (256, 256),
+    (128, 128),
+    (64, 64),
+]
+se, de = create_point_embeddings()
 
 # %%
 with torch.no_grad():
@@ -67,16 +75,62 @@ vision_feats[-1] = vision_feats[-1] + model.no_mem_embed
 feats = [
     feat.permute(1, 2, 0).view(1, -1, *feat_size)
     for feat, feat_size in zip(vision_feats[::-1], feat_sizes[::-1])
-]
+][::-1]
+image_embeddings = feats[-1][-1].unsqueeze(0)
 if len(vision_feats) > 1:
     high_res_features = [
-        x.permute(1, 2, 0).view(x.size(1), x.size(2), *s)
-        for x, s in zip(vision_feats[:-1], feat_sizes[:-1])
+        feat_level[-1].unsqueeze(0)
+        for feat_level in feats[:-1]
     ]
 else:
     high_res_features = None
 image_embeddings = feats[-1][-1].unsqueeze(0)
-se, de = create_point_embeddings()
+with torch.no_grad():
+    pred, _, _, _ = model.sam_mask_decoder(
+        image_embeddings=image_embeddings,
+        image_pe=model.sam_prompt_encoder.get_dense_pe(),
+        sparse_prompt_embeddings=se,
+        dense_prompt_embeddings=de,
+        multimask_output=False, # TODO CHECK IF NEEDED -> False!
+        repeat_image=False,
+        high_res_features=high_res_features,
+    )
+image_size = 1024
+high_res_masks = F.interpolate(
+    pred,
+    size=(image_size, image_size),
+    mode="bilinear",
+    align_corners=False,
+)
+B = vision_feats[-1].size(1)
+C = model.memory_attention.d_model
+H, W = feat_sizes[-1]
+pix_feat = vision_feats[-1].permute(1, 2, 0).view(B, C, H, W)
+mem  = model.memory_encoder(
+    pix_feat=pix_feat,
+    masks=high_res_masks,
+    skip_mask_sigmoid=False,
+)
+maskmem_features = mem.get('vision_features')
+maskmem_pos_enc = mem.get('vision_pos_enc')
+
+# create pixel features with memory
+# to_cat_memory = [maskmem_features.flatten(2).permute(2, 0, 1)]
+# to_cat_memory_pos_embed = [maskmem_pos_enc[-1].flatten(2).permute(2, 0, 1) + model.maskmem_tpos_enc[0]]
+# memory = torch.cat(to_cat_memory, dim=0)
+# memory_pos_embed = torch.cat(to_cat_memory_pos_embed, dim=0)
+
+memory = maskmem_features.flatten(2).permute(2, 0, 1)
+memory_pos_embed = maskmem_pos_enc[-1].flatten(2).permute(2, 0, 1) + model.maskmem_tpos_enc[0]
+
+pix_feat_with_mem = model.memory_attention(
+    curr=vision_feats[-1:],
+    curr_pos=vision_pos_embeds[-1:],
+    memory=memory,
+    memory_pos=memory_pos_embed,
+    num_obj_ptr_tokens=0
+)
+pix_feat_with_mem = pix_feat_with_mem.permute(1, 2, 0).view(B, C, H, W)
 # %%
 sam2_cp = "/oliver/SAM2/checkpoints/sam2_hiera_tiny.pt"
 model_cfg = "sam2_hiera_t.yaml"
