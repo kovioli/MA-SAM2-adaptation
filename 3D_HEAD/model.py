@@ -51,8 +51,78 @@ class SAM2_MODEL(nn.Module):
         #     (128, 128),
         #     (64, 64),
         # ]
-        self.image_size=1024
-    def forward(self, x, memory=None):
+        self.image_size = 1024
+
+    def forward(self, x, memory: tuple = (None, None)):
+        """
+        Args:
+            x: image tensor
+            memory: tuple of (maskmem_features, maskmem_pos_enc)
+        """
+        backbone_out = self.model.forward_image(x)
+        _, vision_feats, vision_pos_embeds, feat_sizes = self.model._prepare_backbone_features(backbone_out)
+        B, C, H, W = self.get_embedding_dims(vision_feats, feat_sizes)
+        pixel_features = None
+        if all(memory) is not None:
+            pix_feat_with_mem = self.model.memory_attention(
+                curr=vision_feats[-1:],
+                curr_pos=vision_pos_embeds[-1:],
+                memory=memory[0],
+                memory_pos=memory[1],
+                num_obj_ptr_tokens=0
+            )
+            pixel_features = pix_feat_with_mem.permute(1, 2, 0).view(B, C, H, W)
+        else:
+            vision_feats[-1] = vision_feats[-1] + self.model.no_mem_embed
+            feats = [
+                feat.permute(1, 2, 0).view(1, -1, *feat_size)
+                for feat, feat_size in zip(vision_feats[::-1], feat_sizes[::-1])
+            ]
+            pixel_features = feats[-1][-1].unsqueeze(0)
+        if len(vision_feats) > 1:
+            high_res_features = [
+                feat_level[-1].unsqueeze(0)
+                for feat_level in feats[:-1]
+            ]
+        else:
+            high_res_features = None
+        
+        pred, _, _, _ = self.model.sam_mask_decoder(
+            image_embeddings=pixel_features,
+            image_pe=self.model.sam_prompt_encoder.get_dense_pe(),
+            sparse_prompt_embeddings=self.se,
+            dense_prompt_embeddings=self.de,
+            multimask_output=False,
+            repeat_image=False,
+            high_res_features=high_res_features,
+        )
+        # create memory
+        high_res_masks = F.interpolate(
+            pred,
+            size=(self.image_size, self.image_size),
+            mode="bilinear",
+            align_corners=False,
+        )
+        
+        mem = self.model.memory_encoder(
+            pix_feat=pixel_features,
+            masks=high_res_masks,
+            skip_mask_sigmoid=False,
+        )
+        maskmem_features = mem.get('vision_features')
+        maskmem_pos_enc = mem.get('vision_pos_enc')
+        memory = maskmem_features.flatten(2).permute(2, 0, 1)
+        memory_pos_embed = maskmem_pos_enc[-1].flatten(2).permute(2, 0, 1) + self.model.maskmem_tpos_enc[0]
+        return pred, (memory, memory_pos_embed)
+        
+    
+    def get_embedding_dims(self, vision_feats, feat_sizes):
+        B = vision_feats[-1].size(1)
+        C = self.model.memory_attention.d_model
+        H, W = feat_sizes[-1]
+        return B, C, H, W
+
+    def forwarddddd(self, x, memory=None):
         # Encode the current image
         backbone_out = self.model.forward_image(x)
         backbone_features, vision_feats, vision_pos_embeds, feat_sizes = self.model._prepare_backbone_features(backbone_out)
