@@ -46,14 +46,9 @@ class SAM2_MODEL(nn.Module):
             max_sprinkle_area=0.0,
         )
         self.se, self.de = self.create_point_embeddings()
-        # self._bb_feat_sizes = [
-        #     (256, 256),
-        #     (128, 128),
-        #     (64, 64),
-        # ]
         self.image_size = 1024
 
-    def forward(self, x, memory: tuple = (None, None)):
+    def forward(self, x, memory = None):
         """
         Args:
             x: image tensor
@@ -63,7 +58,7 @@ class SAM2_MODEL(nn.Module):
         _, vision_feats, vision_pos_embeds, feat_sizes = self.model._prepare_backbone_features(backbone_out)
         B, C, H, W = self.get_embedding_dims(vision_feats, feat_sizes)
         pixel_features = None
-        if all(memory) is not None:
+        if memory is not None:
             pix_feat_with_mem = self.model.memory_attention(
                 curr=vision_feats[-1:],
                 curr_pos=vision_pos_embeds[-1:],
@@ -77,9 +72,13 @@ class SAM2_MODEL(nn.Module):
             feats = [
                 feat.permute(1, 2, 0).view(1, -1, *feat_size)
                 for feat, feat_size in zip(vision_feats[::-1], feat_sizes[::-1])
-            ]
+            ][::-1]
             pixel_features = feats[-1][-1].unsqueeze(0)
         if len(vision_feats) > 1:
+            feats = [
+                feat.permute(1, 2, 0).view(1, -1, *feat_size)
+                for feat, feat_size in zip(vision_feats[::-1], feat_sizes[::-1])
+            ][::-1]
             high_res_features = [
                 feat_level[-1].unsqueeze(0)
                 for feat_level in feats[:-1]
@@ -210,13 +209,12 @@ class SAM2_MODEL(nn.Module):
 
 
 
-sam2_cp = "/oliver/SAM2/checkpoints/sam2_hiera_tiny.pt"
-model_cfg = "sam2_hiera_t.yaml"
-model = SAM2_MODEL(model_cfg, sam2_cp, DEVICE)
+# sam2_cp = "/oliver/SAM2/checkpoints/sam2_hiera_tiny.pt"
+# model_cfg = "sam2_hiera_t.yaml"
+# model = SAM2_MODEL(model_cfg, sam2_cp, DEVICE)
 
-image = Image.open('/oliver/SAM2/0100.png')
-image = image.resize((1024, 1024))
-image = np.array(image.convert("RGB"))
-image = model._transforms(image)
-image = image[None, ...].to(DEVICE)
-# %%
+# image = Image.open('/oliver/SAM2/0100.png')
+# image = image.resize((1024, 1024))
+# image = np.array(image.convert("RGB"))
+# image = model._transforms(image)
+# image = image[None, ...].to(DEVICE)
