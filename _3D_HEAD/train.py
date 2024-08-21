@@ -105,14 +105,19 @@ def train(model,train_dataloader, test_dataloader, epoch, step):
         label = label.to(device=DEVICE)
         optimizer.zero_grad()
 
+        # pred, mem = model(image, memory)
         pred, mem = model(image, memory)
         memory = tuple(m.detach() for m in mem)
-        # denoised_img, pred = model(image, points)
         loss = lossfunc(pred, label) * 100
         train_loss.append(loss.item())
         loss.requires_grad_(True)
         loss.backward(retain_graph=True)
         optimizer.step()
+        # pdb.set_trace()
+        # for name, param in model.unet.named_parameters():
+        #     if param.requires_grad:
+        #         print(f"Gradient for {name}: {param.grad.mean().item()}")
+        # print("\n\n")
         
         iou, dice = eval_seg(pred, label, THRESHOLD)
         iou_list.append(iou)

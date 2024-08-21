@@ -167,11 +167,11 @@ class HeadModel(nn.Module):
         )
         
         for n, value in self.sam2.named_parameters():
-            value.requires_grad = True
-            # if 'mask_decoder' in n:
-            #     value.requires_grad = True
-            # else:
-            #     value.requires_grad = False
+            # value.requires_grad = True
+            if 'mask_decoder' in n:
+                value.requires_grad = True
+            else:
+                value.requires_grad = False
 
     def forward(self, x, memory = None):
         denoised_img = self.unet(x)

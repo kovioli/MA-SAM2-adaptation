@@ -61,14 +61,14 @@ class PNGDataset(Dataset):
         tomogram_path, label_path = self.data[idx]
         
         t = Image.open(tomogram_path)
-        t = t.resize((1024, 1024))
+        t = t.resize((1024, 1024), Image.LANCZOS)
         t = np.array(t.convert('RGB'))
         t = self.to_tensor(t).to(self.device)
         
         l = Image.open(label_path).convert('L')
-        l = l.resize((256, 256))
+        l = l.resize((256, 256), Image.LANCZOS)
         l = np.array(l) / 255
-        l = (l > 0.025).astype(np.uint8) # TODO: CHECK IF NEEDED
+        # l = (l > 0.025).astype(np.uint8) # TODO: CHECK IF NEEDED
         l = self.to_tensor(l).to(self.device)#.unsqueeze(0)
         
         return t, l
