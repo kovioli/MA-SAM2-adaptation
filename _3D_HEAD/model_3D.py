@@ -180,6 +180,7 @@ class HeadModel(nn.Module):
         
         masks, memory = self.sam2(img_add, memory)
         return masks, memory
+        # return masks, denoised_img, memory
 
 # sam2_cp = "/oliver/SAM2/checkpoints/sam2_hiera_tiny.pt"
 # model_cfg = "sam2_hiera_t.yaml"

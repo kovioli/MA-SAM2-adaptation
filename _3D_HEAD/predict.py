@@ -7,15 +7,24 @@ from dataset import PNGDataset
 import matplotlib.pyplot as plt
 import mrcfile
 from skimage.transform import resize
-
-
-TS = "21082024_13:58" # tiny
-DEVICE = 'cuda:1'
-PRED_ID = 'TS_0002'
-model = HeadModel('tiny', DEVICE, in_chan=3)
-
-ds = PNGDataset(main_folder='/oliver/EMPIAR_png', DS_ID='TS_0002', device=DEVICE)
 # %%
+
+pred_tomogram_info_list = [
+    {"name": "TS_0001", "z_offset": 390, "target_shape": (210, 927, 927)},
+    {"name": "TS_0002", "z_offset": 380, "target_shape": (240, 927, 927)},
+    {"name": "TS_0003", "z_offset": 380, "target_shape": (250, 927, 927)},
+    {"name": "TS_0004", "z_offset": 340, "target_shape": (300, 927, 927)},
+    {"name": "TS_0005", "z_offset": 110, "target_shape": (280, 928, 928)},
+    {"name": "TS_0006", "z_offset": 170, "target_shape": (140, 928, 928)},
+    {"name": "TS_0007", "z_offset": 200, "target_shape": (150, 928, 928)},
+    {"name": "TS_0008", "z_offset": 100, "target_shape": (400, 928, 928)},
+    {"name": "TS_0009", "z_offset": 120, "target_shape": (250, 928, 928)},
+    {"name": "TS_0010", "z_offset": 350, "target_shape": (290, 927, 927)},
+]
+
+TS = "27082024_13:40"
+DEVICE = 'cuda:1'
+model = HeadModel('tiny', DEVICE, in_chan=3)
 model_path = os.path.join(
     '/oliver',
     'SAM2',
@@ -26,6 +35,11 @@ model_path = os.path.join(
 state_dict = torch.load(model_path)
 model.load_state_dict(state_dict)
 model.eval()
+
+# %%
+PRED_ID = 'TS_0001'
+pred_tomogram_info = [x for x in pred_tomogram_info_list if x['name'] == PRED_ID][0]
+ds = PNGDataset(main_folder='/oliver/EMPIAR_png', DS_ID=PRED_ID, device=DEVICE)
 # %%
 all_predictions = []
 memory = None
@@ -33,10 +47,13 @@ with torch.no_grad():
     for i in range(len(ds)):
         if i % 20 == 0:
             print(f"Slice {i}")
-        pred, memory = model(ds[i][0].unsqueeze(0), memory)
+        # memory = None # for single slice training
+        pred, den_img, memory = model(ds[i][0].unsqueeze(0), memory)
+        #memory = None
         all_predictions.append(pred.cpu().numpy().squeeze(0))
 all_predictions = np.concatenate(all_predictions, axis=0)
-resized_pred = resize(all_predictions, (240, 927, 927), mode='reflect', anti_aliasing=True)
+print("resizing...")
+resized_pred = resize(all_predictions, pred_tomogram_info.get('target_shape'), mode='reflect', anti_aliasing=True)
 
 pred_save_path = os.path.join(
     '/oliver',

@@ -47,8 +47,9 @@ def evaluate(model,val_dataloader):
             image = image.to(device=DEVICE)
             label = label.to(device=DEVICE)
             
-            pred, mem = model(image, memory)
-            memory = tuple(m.detach() for m in mem)
+            # pred, mem = model(image, memory)
+            # memory = tuple(m.detach() for m in mem)
+            pred, _ = model(image)
 
             loss = lossfunc(pred,label) * 100
             val_loss.append(loss.item())
@@ -106,8 +107,8 @@ def train(model,train_dataloader, test_dataloader, epoch, step):
         optimizer.zero_grad()
 
         # pred, mem = model(image, memory)
-        pred, mem = model(image, memory)
-        memory = tuple(m.detach() for m in mem)
+        pred, _ = model(image)
+        #memory = tuple(m.detach() for m in mem)
         loss = lossfunc(pred, label) * 100
         train_loss.append(loss.item())
         loss.requires_grad_(True)
@@ -156,6 +157,7 @@ if __name__ == "__main__":
     epochs_wo_improvement = 0
 
     timestamp_str = datetime.datetime.now().strftime("%d%m%Y_%H:%M")
+    print("TIMESTAMP: ", timestamp_str)
     model_save_dir = os.path.join(
         '/oliver',
         'SAM2',
@@ -172,11 +174,10 @@ if __name__ == "__main__":
     train_data_PNG, val_data_PNG = create_train_val_datasets(
         main_folder=os.path.join('/oliver', 'EMPIAR_png'),
         DS_ID=TRAIN_ID,
-        device=DEVICE,
-        train_ratio=TRAIN_RATIO
+        device=DEVICE
     )
 
-    train_dataloader = torch.utils.data.DataLoader(train_data_PNG, batch_size=BS, shuffle=False)
+    train_dataloader = torch.utils.data.DataLoader(train_data_PNG, batch_size=BS, shuffle=True)
     val_dataloader = torch.utils.data.DataLoader(val_data_PNG, batch_size=BS, shuffle=False)  
 
     print(f"Loader lengths: train: {len(train_dataloader)}, val: {len(val_dataloader)}")

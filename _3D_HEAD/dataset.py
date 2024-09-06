@@ -1,14 +1,16 @@
 # %%
 import os
+import sys
+sys.path.append('..')
 from torch.utils.data import Dataset, Subset
 import torch
 from PIL import Image
 import numpy as np
 from torchvision.transforms import ToTensor
+from _3D_HEAD.config import EIGHTH
 
-
-
-def create_train_val_datasets(main_folder, DS_ID, device='cuda', train_ratio=0.8):
+def create_train_val_datasets(main_folder, DS_ID, device='cuda', eighth=EIGHTH):
+    # Load the full dataset
     full_dataset = PNGDataset(
         main_folder=main_folder,
         DS_ID=DS_ID,
@@ -17,9 +19,36 @@ def create_train_val_datasets(main_folder, DS_ID, device='cuda', train_ratio=0.8
 
     print(f"Full dataset length: {len(full_dataset)}")
 
-    # Define the indices for training and validation slices
-    train_indices = list(range(40, 140))
-    val_indices = list(range(140, 180))
+    # Generate indices for the full dataset
+    indices = np.arange(len(full_dataset))
+
+    # Shuffle the indices to ensure randomness
+    np.random.shuffle(indices)
+
+    # Calculate the number of validation samples
+    val_size = len(indices) // 8
+
+    # Take every 8th element for validation
+    val_indices = indices[::8]
+
+    # Remove validation indices from the dataset
+    train_indices = np.setdiff1d(indices, val_indices)
+
+    # Define the training indices based on the "eighth" parameter
+    if eighth == 1:
+        # Take every 8th element from the remaining (7/8)
+        train_indices = train_indices[::8]
+    elif eighth == 2:
+        # Take every 4th element from the remaining (7/8)
+        train_indices = train_indices[::4]
+    elif eighth == 4:
+        # Take every 2nd element from the remaining (7/8)
+        train_indices = train_indices[::2]
+    elif eighth == 8:
+        # Take every element from the remaining (7/8)
+        pass
+    else:
+        raise ValueError("The 'eighth' parameter must be either 1 or 2.")
 
     # Verify the indices are within the valid range
     if max(train_indices) >= len(full_dataset) or max(val_indices) >= len(full_dataset):
@@ -30,6 +59,54 @@ def create_train_val_datasets(main_folder, DS_ID, device='cuda', train_ratio=0.8
     val_dataset = Subset(full_dataset, val_indices)
 
     return train_dataset, val_dataset
+
+# def create_train_val_datasets(main_folder, DS_ID, device='cuda', train_ratio=0.8):
+#     full_dataset = PNGDataset(
+#         main_folder=main_folder,
+#         DS_ID=DS_ID,
+#         device=device
+#     )
+
+#     print(f"Full dataset length: {len(full_dataset)}")
+
+#     # Define the indices for training and validation slices
+#     # train_indices = list(range(46, 174))
+#     # val_indices = list(range(16, 46))
+
+#     train_indices = list(range(TRAIN_SLICES[0], TRAIN_SLICES[1]))
+#     val_indices = list(range(TRAIN_SLICES[0]-30, TRAIN_SLICES[0]))
+
+#     # Verify the indices are within the valid range
+#     if max(train_indices) >= len(full_dataset) or max(val_indices) >= len(full_dataset):
+#         raise ValueError("The defined indices are out of the range of the dataset length.")
+
+#     # Create the training and validation datasets using Subset
+#     train_dataset = Subset(full_dataset, train_indices)
+#     val_dataset = Subset(full_dataset, val_indices)
+
+#     return train_dataset, val_dataset
+
+# def create_train_val_datasets(main_folder, DS_ID, device='cuda', train_ratio=0.8):
+#     full_dataset = PNGDataset(
+#         main_folder=main_folder,
+#         DS_ID=DS_ID,
+#         device=device
+#     )
+
+#     dataset_size = len(full_dataset)
+#     train_size = int(train_ratio * dataset_size)
+#     val_size = dataset_size - train_size
+
+#     train_dataset, val_dataset = torch.utils.data.random_split(
+#         full_dataset, 
+#         [train_size, val_size],
+#         generator=torch.Generator().manual_seed(42)
+#     )
+
+#     train_dataset.dataset.split = 'train'
+#     val_dataset.dataset.split = 'val'
+
+#     return train_dataset, val_dataset
 
 
 
