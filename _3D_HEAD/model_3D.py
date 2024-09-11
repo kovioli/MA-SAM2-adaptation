@@ -6,7 +6,7 @@ import sys
 from typing import List
 sys.path.append('/oliver/SAM2')
 import pdb
-from HEAD.unet import UNET_model
+from _3D_HEAD.unet_check import UNET_CHECK_model
 from sam2.build_sam import build_sam2
 from sam2.utils.transforms import SAM2Transforms
 import torch.nn.functional as F
@@ -159,7 +159,7 @@ class HeadModel(nn.Module):
     def __init__(self, model_type, device, in_chan=3):
         super(HeadModel, self).__init__()
         model_info = model_dict[model_type]
-        self.unet = UNET_model(in_channels=in_chan, out_channels=3).to(device)
+        self.unet = UNET_CHECK_model(in_channels=in_chan, out_channels=3).to(device)
         self.sam2 = SAM2_MODEL(
             model_cfg=model_info['config'],
             ckpt_path=model_info['ckpt'],
