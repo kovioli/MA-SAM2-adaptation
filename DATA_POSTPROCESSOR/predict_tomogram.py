@@ -4,12 +4,12 @@ import torch
 import mrcfile
 from _3D_HEAD.model_3D import HeadModel
 from _3D_HEAD.dataset import PNGDataset
-from _3D_HEAD.config import DEVICE
+from _3D_HEAD.config import DEVICE, MODEL_TYPE
 from skimage.transform import resize
 
 
 def load_model_from_path(model_path: str):
-    model = HeadModel('tiny', DEVICE, in_chan=3)
+    model = HeadModel(MODEL_TYPE, DEVICE, in_chan=3)
     state_dict = torch.load(model_path)
     model.load_state_dict(state_dict)
     model.eval()
@@ -41,14 +41,16 @@ def predict(
         os.makedirs(PREDICTION_DIR)
     
     model_path = os.path.join(
-        '/oliver',
+        '/media',
+        'hdd1',
+        'oliver',
         'SAM2',
         'checkpoints',
         TIMESTAMP,
         'best_model.pth'
     )
     model = load_model_from_path(model_path)
-    ds = PNGDataset(main_folder='/oliver/EMPIAR_png', DS_ID=f"TS_{PRED_ID}", device=DEVICE)
+    ds = PNGDataset(main_folder='/media/hdd1/oliver/EMPIAR_png', DS_ID=f"TS_{PRED_ID}", device=DEVICE)
     
     all_predictions = []
     memory = None
