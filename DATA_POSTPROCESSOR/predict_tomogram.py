@@ -50,7 +50,7 @@ def predict(
         'best_model.pth'
     )
     model = load_model_from_path(model_path)
-    ds = PNGDataset(main_folder='/oliver/EMPIAR_png', DS_ID=f"TS_{PRED_ID}", device=DEVICE)
+    ds = PNGDataset(main_folder='/media/hdd1/oliver/EMPIAR_png', DS_ID=f"TS_{PRED_ID}", device=DEVICE)
     
     all_predictions = []
     memory = None

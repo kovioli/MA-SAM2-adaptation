@@ -12,5 +12,5 @@ LOG_EVERY_STEP = 100
 PATIENCE = 10
 MIN_DELTA = 0.01
 TRAIN_RATIO = 0.8
-MODEL_TYPE = 'tiny' # 'tiny', 'small', 'base', 'large'
+MODEL_TYPE = 'large' # 'tiny', 'small', 'base', 'large'
 EIGHTH = 8
