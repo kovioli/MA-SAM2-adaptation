@@ -22,11 +22,13 @@ pred_tomogram_info_list = [
     {"name": "TS_0010", "z_offset": 350, "target_shape": (290, 927, 927)},
 ]
 
-TS = "27082024_13:40"
-DEVICE = 'cuda:1'
-model = HeadModel('tiny', DEVICE, in_chan=3)
+TS = "11092024_08:33"
+DEVICE = 'cuda:3'
+model = HeadModel('base', DEVICE, in_chan=3)
 model_path = os.path.join(
-    '/oliver',
+    '/media',
+    'hdd1',
+    'oliver',
     'SAM2',
     'checkpoints',
     TS,
@@ -37,26 +39,26 @@ model.load_state_dict(state_dict)
 model.eval()
 
 # %%
-PRED_ID = 'TS_0001'
+PRED_ID = 'TS_0002'
 pred_tomogram_info = [x for x in pred_tomogram_info_list if x['name'] == PRED_ID][0]
-ds = PNGDataset(main_folder='/oliver/EMPIAR_png', DS_ID=PRED_ID, device=DEVICE)
+ds = PNGDataset(main_folder='/media/hdd1/oliver/EMPIAR_png', DS_ID=PRED_ID, device=DEVICE)
 # %%
 all_predictions = []
-memory = None
 with torch.no_grad():
     for i in range(len(ds)):
         if i % 20 == 0:
             print(f"Slice {i}")
         # memory = None # for single slice training
-        pred, den_img, memory = model(ds[i][0].unsqueeze(0), memory)
-        #memory = None
+        pred, _ = model(ds[i][0].unsqueeze(0))
         all_predictions.append(pred.cpu().numpy().squeeze(0))
 all_predictions = np.concatenate(all_predictions, axis=0)
 print("resizing...")
 resized_pred = resize(all_predictions, pred_tomogram_info.get('target_shape'), mode='reflect', anti_aliasing=True)
 
 pred_save_path = os.path.join(
-    '/oliver',
+    '/media',
+    'hdd1',
+    'oliver',
     'SAM2',
     'PREDICT',
     f'TS_{TS}',

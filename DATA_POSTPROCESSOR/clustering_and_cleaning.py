@@ -211,8 +211,8 @@ def cluster_and_clean(
     original_prediction_ds = read_mrc(original_prediction_path)
 
     # normalize
-    norm_prediction_ds = (original_prediction_ds - original_prediction_ds.min()) / (original_prediction_ds.max() - original_prediction_ds.min())
-    # norm_prediction_ds = sigmoid(original_prediction_ds)
+    # norm_prediction_ds = (original_prediction_ds - original_prediction_ds.min()) / (original_prediction_ds.max() - original_prediction_ds.min())
+    norm_prediction_ds = sigmoid(original_prediction_ds)
     # threshold
     prediction_ds_thr = 1 * (norm_prediction_ds > threshold)
 

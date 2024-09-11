@@ -9,7 +9,7 @@ import numpy as np
 from dataset import create_train_val_datasets
 from torch.autograd import Function
 from torchvision import transforms
-from monai.losses import GeneralizedDiceLoss
+from monai.losses import GeneralizedDiceLoss, DiceCELoss
 import matplotlib.pyplot as plt
 from torch.utils.tensorboard import SummaryWriter
 import datetime
@@ -32,7 +32,8 @@ from config import (
 )    
 
 
-lossfunc = GeneralizedDiceLoss(sigmoid=True, reduction='mean')
+lossfunc = GeneralizedDiceLoss(sigmoid=True, reduction='mean') # original (deepict), has been using for quite a while
+# lossfunc = DiceCELoss(sigmoid=True, squared_pred=True, reduction='mean')
 
 
 def evaluate(model,val_dataloader):
@@ -159,7 +160,9 @@ if __name__ == "__main__":
     timestamp_str = datetime.datetime.now().strftime("%d%m%Y_%H:%M")
     print("TIMESTAMP: ", timestamp_str)
     model_save_dir = os.path.join(
-        '/oliver',
+        '/media',
+        'hdd1',
+        'oliver',
         'SAM2',
         'checkpoints',
         timestamp_str
@@ -167,12 +170,12 @@ if __name__ == "__main__":
     os.makedirs(model_save_dir, exist_ok=True)
 
     #os.makedirs(os.path.dirname(model_save_dir), exist_ok=True)
-    writer = SummaryWriter(log_dir=os.path.join('/oliver', 'SAM2', 'logs', timestamp_str))
+    writer = SummaryWriter(log_dir=os.path.join('/media', 'hdd1', 'oliver', 'SAM2', 'logs', timestamp_str))
     
 
 
     train_data_PNG, val_data_PNG = create_train_val_datasets(
-        main_folder=os.path.join('/oliver', 'EMPIAR_png'),
+        main_folder=os.path.join('/media', 'hdd1', 'oliver', 'EMPIAR_png'),
         DS_ID=TRAIN_ID,
         device=DEVICE
     )

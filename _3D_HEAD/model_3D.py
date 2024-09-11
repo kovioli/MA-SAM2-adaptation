@@ -139,19 +139,19 @@ class SAM2_MODEL(nn.Module):
 model_dict = {
     'tiny': {
         'config': 'sam2_hiera_t.yaml',
-        'ckpt': '/oliver/SAM2/checkpoints/sam2_hiera_tiny.pt'
+        'ckpt': '/media/hdd1/oliver/SAM2/checkpoints/sam2_hiera_tiny.pt'
     },
     'small': {
         'config': 'sam2_hiera_s.yaml',
-        'ckpt': '/oliver/SAM2/checkpoints/sam2_hiera_small.pt'
+        'ckpt': '/media/hdd1/oliver/SAM2/checkpoints/sam2_hiera_small.pt'
     },
     'base': {
         'config': 'sam2_hiera_b+.yaml',
-        'ckpt': '/oliver/SAM2/checkpoints/sam2_hiera_base_plus.pt'
+        'ckpt': '/media/hdd1/oliver/SAM2/checkpoints/sam2_hiera_base_plus.pt'
     },
     'large': {
         'config': 'sam2_hiera_l.yaml',
-        'ckpt': '/oliver/SAM2/checkpoints/sam2_hiera_large.pt'
+        'ckpt': '/media/hdd1/oliver/SAM2/checkpoints/sam2_hiera_large.pt'
     }
     
 }
