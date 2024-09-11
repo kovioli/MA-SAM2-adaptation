@@ -14,7 +14,7 @@ from DATA_POSTPROCESSOR.particle_picking_eval import eval_picking
 from DATA_POSTPROCESSOR.predict_tomogram import predict
 
 TRAIN_DS_ID = '0001'
-TRAIN_DS_TIMESTAMP = '11092024_14:18'
+TRAIN_DS_TIMESTAMP = '11092024_08:33'
 memory_used = False
 
 TOMO_IDs = ['0001', '0002', '0003', '0004', '0005', '0006', '0007', '0008', '0009', '0010']
@@ -63,7 +63,7 @@ if __name__ == '__main__':
             '/oliver',
             'MA',
             'GT_particle_lists',
-            f'TS_{tomo_id}_cyto_ribosomes.csv'
+            f'TS_{tomo_id}_fas.csv'
         )
         predict(
             PRED_ID=tomo_id,
