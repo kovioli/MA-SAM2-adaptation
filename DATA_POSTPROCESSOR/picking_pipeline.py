@@ -48,7 +48,7 @@ PREDICTION_DIR = os.path.join(
 )
 
 # threshold_list = np.arange(0.6, 0.85, 0.025)
-threshold_list = np.arange(0.7, 0.9, 0.025)
+threshold_list = np.arange(0.8, 0.95, 0.025)
 # threshold_list = [0.00001]
 if __name__ == '__main__':
     F1_results = []
