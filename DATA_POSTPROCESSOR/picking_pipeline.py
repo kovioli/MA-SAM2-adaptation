@@ -14,11 +14,10 @@ from DATA_POSTPROCESSOR.particle_picking_eval import eval_picking
 from DATA_POSTPROCESSOR.predict_tomogram import predict
 
 TRAIN_DS_ID = '0001'
-TRAIN_DS_TIMESTAMP = '11092024_14:40'
+TRAIN_DS_TIMESTAMP = '11092024_19:26'
 memory_used = False
 
-TOMO_IDs = ['0001', '0002', '0003', '0004', '0005', '0006', '0007', '0008', '0009', '0010']
-TOMO_IDs = ['0001', '0002', '0003', '0004', '0005']
+TOMO_IDs = ['0004', '0005', '0006', '0007', '0008', '0009', '0010']
 pred_tomogram_info_list = [
     {"name": "TS_0001", "z_offset": 390, "target_shape": (210, 927, 927)},
     {"name": "TS_0002", "z_offset": 380, "target_shape": (240, 927, 927)},
@@ -48,15 +47,15 @@ PREDICTION_DIR = os.path.join(
 )
 
 # threshold_list = np.arange(0.6, 0.85, 0.025)
-threshold_list = np.arange(0.8, 0.95, 0.025)
+threshold_list = np.arange(0.7, 0.9, 0.025)
 # threshold_list = [0.00001]
 if __name__ == '__main__':
     F1_results = []
 
     for tomo_id in TOMO_IDs:
         # Skip the training dataset
-        # if TRAIN_DS_ID == tomo_id:
-        #     continue
+        if TRAIN_DS_ID == tomo_id:
+            continue
         print(f"\n\n{50*'-'}\nPROCESSING DS: {tomo_id} - memory {'enabled' if memory_used else 'disabled'}\n{50*'-'}\n")
         # Find the relevant info
         pred_tomogram_info = [item for item in pred_tomogram_info_list if item.get("name") == f"TS_{tomo_id}"][0]
@@ -64,7 +63,7 @@ if __name__ == '__main__':
             '/oliver',
             'MA',
             'GT_particle_lists',
-            f'TS_{tomo_id}_fas.csv'
+            f'TS_{tomo_id}_cyto_ribosomes.csv'
         )
         predict(
             PRED_ID=tomo_id,

@@ -117,8 +117,8 @@ class PNGDataset(Dataset):
         DS_ID: str (e.g. 'TS_0001')
         """
         tomogram_dir = os.path.join(main_folder, 'tomograms', DS_ID)
-        # label_dir = os.path.join(main_folder, 'ribosomes', DS_ID) # TODO -> change for label change
-        label_dir = os.path.join(main_folder, 'fas', DS_ID)
+        label_dir = os.path.join(main_folder, 'ribosomes', DS_ID) # TODO -> change for label change
+        # label_dir = os.path.join(main_folder, 'fas', DS_ID)
 
         self.device = device
         self.data = []
