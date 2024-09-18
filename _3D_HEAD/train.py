@@ -6,7 +6,8 @@ import yaml
 import torch
 import torch.nn as nn
 import numpy as np
-from dataset import create_train_val_datasets
+# from dataset import create_train_val_datasets
+from shrec_dataset import create_train_val_datasets
 from torch.autograd import Function
 from torchvision import transforms
 from monai.losses import GeneralizedDiceLoss, DiceCELoss
@@ -163,19 +164,19 @@ if __name__ == "__main__":
         '/media',
         'hdd1',
         'oliver',
-        'SAM2',
+        'SAM2_SHREC',
         'checkpoints',
         timestamp_str
     )
     os.makedirs(model_save_dir, exist_ok=True)
 
     #os.makedirs(os.path.dirname(model_save_dir), exist_ok=True)
-    writer = SummaryWriter(log_dir=os.path.join('/media', 'hdd1', 'oliver', 'SAM2', 'logs', timestamp_str))
+    writer = SummaryWriter(log_dir=os.path.join('/media', 'hdd1', 'oliver', 'SAM2_SHREC', 'logs', timestamp_str))
     
 
 
     train_data_PNG, val_data_PNG = create_train_val_datasets(
-        main_folder=os.path.join('/media', 'hdd1', 'oliver', 'EMPIAR_png'),
+        main_folder=os.path.join('/media', 'hdd1', 'oliver', 'SHREC'),
         DS_ID=TRAIN_ID,
         device=DEVICE
     )
