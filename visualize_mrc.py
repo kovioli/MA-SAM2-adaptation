@@ -3,7 +3,7 @@ import os
 import mrcfile
 import matplotlib.pyplot as plt
 
-pred_timestamp = '11092024_14:18'
+pred_timestamp = '19092024_09:56'
 DS_NAME = 'TS_0001'
 PRED_PATH = os.path.join(
     '/media',

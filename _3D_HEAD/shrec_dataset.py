@@ -43,12 +43,51 @@ def create_multi_ds(main_folder, DS_IDs, device='cuda', train_ratio=0.8):
     
     return train_ds, val_ds
     
+    
+def train_val_new(main_folder, DS_ID, device='cuda', eighth=EIGHTH):
+    # Load the full dataset
+    train_ds = MRCDataset(
+        main_folder=main_folder,
+        DS_ID=DS_ID,
+        device=device
+    )
+    val_ds = MRCDataset(
+        main_folder=main_folder,
+        DS_ID='model_9',
+        device=device
+    )
+
+
+    train_indices = np.arange(len(train_ds))
+    val_indices = np.arange(len(val_ds))
+    
+    val_indices = val_indices[::8]
+
+    if eighth == 1:
+        train_indices = train_indices[::8]
+    elif eighth == 2:
+        train_indices = train_indices[::4]
+    elif eighth == 4:
+        train_indices = train_indices[::2]
+    elif eighth == 8:
+        pass
+    
+    train_ds = Subset(train_ds, train_indices)
+    val_ds = Subset(val_ds, val_indices)
+
+    return train_ds, val_ds
 
 def create_train_val_datasets(main_folder, DS_ID, device='cuda', eighth=EIGHTH):
     # Load the full dataset
     full_dataset = MRCDataset(
         main_folder=main_folder,
         DS_ID=DS_ID,
+        device=device
+    )
+    
+    full_validation_ds = MRCDataset(
+        main_folder=main_folder,
+        DS_ID='model_9',
         device=device
     )
 

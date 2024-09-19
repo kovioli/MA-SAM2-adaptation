@@ -44,7 +44,7 @@ print(f"Model {model_nr} shape: {data.shape}")
 # %%
 
 # PREDICTION
-TS = '19092024_09:56'
+TS = '19092024_08:21'
 FULL_PATH = os.path.join(
     '/media',
     'hdd1',

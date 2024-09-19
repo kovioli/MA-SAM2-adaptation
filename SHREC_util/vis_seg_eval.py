@@ -11,7 +11,7 @@ json_folder = os.path.join(
     'SHREC_segmentation_results'
 )
 
-TS = '19092024_10:43'
+TS = '19092024_11:25'
 json_file = os.path.join(
     json_folder,
     f'segmentation_results_{TS}.json'
@@ -48,7 +48,7 @@ plt.show()
 
 # %%
 
-filtered_new_data = data[1:]  # Exclude model_0
+filtered_new_data = data[2:]  # Exclude model_0, model_1, model_2
 
 # Calculate the averages
 average_dice_new = np.mean([d['dice'] for d in filtered_new_data])
