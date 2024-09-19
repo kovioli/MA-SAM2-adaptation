@@ -1,6 +1,6 @@
 import torch
 
-DEVICE_NUM = 3
+DEVICE_NUM = 2
 DEVICE = torch.device(f"cuda:{DEVICE_NUM}" if torch.cuda.is_available() else "cpu")
 THRESHOLD = (0.1, 0.3, 0.5, 0.7, 0.9)
 EPOCH = 80
@@ -13,4 +13,4 @@ PATIENCE = 10
 MIN_DELTA = 0.01
 TRAIN_RATIO = 0.8
 MODEL_TYPE = 'tiny' # 'tiny', 'small', 'base', 'large'
-EIGHTH = 4
+EIGHTH = 1

@@ -29,18 +29,30 @@ def read_mrc(file_path):
     return data
 
 # %%
-for i in range(2, 10):
-    # model_nr: int = 2
-    model_nr = i
-    filename: str = 'class_mask.mrc'
-    FULL_PATH = os.path.join(
-        '/media',
-        'hdd1',
-        'oliver',
-        'SHREC',
-        f'model_{model_nr}',
-        filename
-    )
-    data = read_mrc(FULL_PATH)
-    print(f"Model {model_nr} shape: {data.shape}")
+model_nr: int = 1
+filename: str = 'class_mask.mrc'
+FULL_PATH = os.path.join(
+    '/media',
+    'hdd1',
+    'oliver',
+    'SHREC',
+    f'model_{model_nr}',
+    filename
+)
+data = read_mrc(FULL_PATH)
+print(f"Model {model_nr} shape: {data.shape}")
 # %%
+
+# PREDICTION
+TS = '18092024_09:37'
+FULL_PATH = os.path.join(
+    '/media',
+    'hdd1',
+    'oliver',
+    'SAM2_SHREC',
+    'PREDICT',
+    TS,
+    f'model_{model_nr}_prediction.mrc',
+)
+pred_data = read_mrc(FULL_PATH)
+print(f"Prediction {model_nr} shape: {pred_data.shape}")    
