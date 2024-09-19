@@ -6,7 +6,9 @@ import sys
 from typing import List
 sys.path.append('/oliver/SAM2')
 import pdb
-from HEAD.unet import UNET_model
+# from HEAD.unet import UNET_model
+from _3D_HEAD.unet_check import UNET_CHECK_model as UNET_model
+
 from sam2.build_sam import build_sam2
 from sam2.utils.transforms import SAM2Transforms
 import torch.nn.functional as F

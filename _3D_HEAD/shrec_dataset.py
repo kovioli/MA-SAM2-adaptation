@@ -2,13 +2,47 @@
 import os
 import sys
 sys.path.append('..')
-from torch.utils.data import Dataset, Subset
+from torch.utils.data import Dataset, Subset, ConcatDataset
 import torch
 import numpy as np
 from torchvision.transforms import ToTensor
 from _3D_HEAD.config import EIGHTH
 import mrcfile
 import torchvision.transforms.functional as TF
+
+def create_multi_ds(main_folder, DS_IDs, device='cuda', train_ratio=0.8):
+    datasets = []
+    for DS_ID in DS_IDs:
+        ds = MRCDataset(
+            main_folder=main_folder,
+            DS_ID=DS_ID,
+            device=device
+        )
+        datasets.append(ds)
+
+    full_ds = ConcatDataset(datasets)
+    
+    print(f"Full DS length: {len(full_ds)}")
+    
+    # Generate shuffled indices
+    indices = np.arange(len(full_ds))
+    np.random.shuffle(indices)
+    
+    # Calculate split point
+    split = int(len(full_ds) * train_ratio)
+    
+    # Create train and validation datasets
+    train_indices = indices[:split]
+    val_indices = indices[split:]
+    
+    train_ds = Subset(full_ds, train_indices)
+    val_ds = Subset(full_ds, val_indices)
+    
+    print(f"Train DS length: {len(train_ds)}")
+    print(f"Val DS length: {len(val_ds)}")
+    
+    return train_ds, val_ds
+    
 
 def create_train_val_datasets(main_folder, DS_ID, device='cuda', eighth=EIGHTH):
     # Load the full dataset
@@ -30,8 +64,10 @@ def create_train_val_datasets(main_folder, DS_ID, device='cuda', eighth=EIGHTH):
     val_indices = indices[::8]
 
     train_indices = np.setdiff1d(indices, val_indices)
-
-    if eighth == 1:
+    
+    if eighth == 0.5:
+        train_indices = train_indices[::16]
+    elif eighth == 1:
         train_indices = train_indices[::8]
     elif eighth == 2:
         train_indices = train_indices[::4]

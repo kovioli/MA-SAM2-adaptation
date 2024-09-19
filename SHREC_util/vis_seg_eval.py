@@ -11,7 +11,7 @@ json_folder = os.path.join(
     'SHREC_segmentation_results'
 )
 
-TS = '18092024_09:37'
+TS = '19092024_10:43'
 json_file = os.path.join(
     json_folder,
     f'segmentation_results_{TS}.json'
