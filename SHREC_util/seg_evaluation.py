@@ -12,7 +12,8 @@ import torch.nn.functional as F
 
 # Set the device
 DEVICE = 'cuda:3'  # Change as needed
-ds_list = ['model_0', 'model_1', 'model_2', 'model_3', 'model_4', 'model_5', 'model_6', 'model_7', 'model_8', 'model_9']
+# ds_list = ['model_0', 'model_1', 'model_2', 'model_3', 'model_4', 'model_5', 'model_6', 'model_7', 'model_8', 'model_9']
+ds_list = ['model_9']
 
 json_result_folder = os.path.join(
     '/oliver',
@@ -22,7 +23,7 @@ json_result_folder = os.path.join(
 
 # Initialize the model
 model = HeadModel('tiny', DEVICE, in_chan=3)
-TS = '19092024_12:39'
+TS = '25092024_14:48'
 model_path = os.path.join(
     '/media',
     'hdd1',
@@ -100,7 +101,7 @@ for DS_ID in ds_list:
 
     print(f"Average Dice coefficient for {DS_ID}: {average_dice}")
     print(f"Average IoU for {DS_ID}: {average_iou}")
-
+    continue
     # Stack all predictions along the depth axis
     all_predictions = np.stack(all_predictions, axis=0)  # Shape: (D, H, W)
 

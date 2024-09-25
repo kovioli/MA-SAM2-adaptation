@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 # from dataset import create_train_val_datasets
-from shrec_dataset import create_train_val_datasets, create_multi_ds, train_val_new
+from shrec_dataset import create_multi_ds
 from torch.autograd import Function
 from torchvision import transforms
 from monai.losses import GeneralizedDiceLoss, DiceCELoss
@@ -24,13 +24,13 @@ from config import (
     EPOCH,
     LR,
     BS,
-    TRAIN_ID,
     TRAIN_IDs,
     LOG_EVERY_STEP,
     TRAIN_RATIO,
     MIN_DELTA,
     PATIENCE,
-    MODEL_TYPE
+    MODEL_TYPE,
+    VAL_IDs
 )    
 
 
@@ -186,9 +186,10 @@ if __name__ == "__main__":
     #     DS_IDs=TRAIN_IDs,
     #     device=DEVICE
     # )
-    train_data_PNG, val_data_PNG = train_val_new(
+    train_data_PNG, val_data_PNG = create_multi_ds(
         main_folder=os.path.join('/media', 'hdd1', 'oliver', 'SHREC'),
-        DS_ID=TRAIN_ID,
+        train_DS_IDs=TRAIN_IDs,
+        val_DS_IDs=VAL_IDs,
         device=DEVICE
     )
 

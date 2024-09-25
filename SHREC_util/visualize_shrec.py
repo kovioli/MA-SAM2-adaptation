@@ -29,8 +29,8 @@ def read_mrc(file_path):
     return data
 
 # %%
-model_nr: int = 1
-filename: str = 'class_mask.mrc'
+model_nr: int = 0
+filename: str = 'grandmodel.mrc'
 FULL_PATH = os.path.join(
     '/media',
     'hdd1',
