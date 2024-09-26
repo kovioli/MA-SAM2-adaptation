@@ -187,7 +187,7 @@ class MRCDataset(Dataset):
             input_slice_tensor, [1024, 1024], interpolation=TF.InterpolationMode.BILINEAR
         )
         # normalize to [0, 1]
-        input_slice_tensor = (input_slice_tensor - input_slice_tensor.min()) / (input_slice_tensor.max() - input_slice_tensor.min())
+        # input_slice_tensor = (input_slice_tensor - input_slice_tensor.min()) / (input_slice_tensor.max() - input_slice_tensor.min())
 
         # Resize label to (1, 256, 256)
         label_slice_tensor = TF.resize(
@@ -216,12 +216,12 @@ class MRCDataset(Dataset):
 
 
 
-# ds = MRCDataset(
-#     main_folder='/media/hdd1/oliver/SHREC',
-#     DS_ID='model_0',
-#     device='cpu'
-# )
-# import matplotlib.pyplot as plt
-# plt.imshow(ds[140][0][1].cpu())
-# plt.axis('off')
+ds = MRCDataset(
+    main_folder='/media/hdd1/oliver/SHREC',
+    DS_ID='model_1',
+    device='cpu'
+)
+import matplotlib.pyplot as plt
+plt.imshow(ds[140][0][1].cpu())
+plt.axis('off')
 # %%

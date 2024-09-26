@@ -23,7 +23,7 @@ json_result_folder = os.path.join(
 
 # Initialize the model
 model = HeadModel('tiny', DEVICE, in_chan=3)
-TS = '25092024_14:48'
+TS = '25092024_15:13'
 model_path = os.path.join(
     '/media',
     'hdd1',
