@@ -10,6 +10,8 @@ import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 from metrics import eval_seg
+from torch.cuda.amp import autocast, GradScaler
+
 
 from config import (
     DEVICE,
@@ -40,9 +42,10 @@ def evaluate(model,val_dataloader):
             image = image.to(device=DEVICE)
             label = label.to(device=DEVICE)
             
-            pred = model(image)
-
-            loss = lossfunc(pred,label) * 100
+            with autocast():
+                pred = model(image)
+                loss = lossfunc(pred,label) * 100
+                
             val_loss.append(loss.item())
             iou,dice = eval_seg(pred, label, THRESHOLD)
             iou_list.append(iou)
@@ -71,8 +74,10 @@ def evaluate_stepwise(model, val_dataloader, step):
             image = image.to(device=DEVICE)
             label = label.to(device=DEVICE)
             
-            pred = model(image)
-            loss = lossfunc(pred, label) * 100
+            with autocast():
+                pred = model(image)
+                loss = lossfunc(pred, label) * 100
+            
             val_loss.append(loss.item())
             iou, dice = eval_seg(pred, label, THRESHOLD)
             iou_list.append(iou)
@@ -97,14 +102,19 @@ def train(model,train_dataloader, test_dataloader, epoch, step):
         label = label.to(device=DEVICE)
         optimizer.zero_grad()
 
-        # pred, mem = model(image, memory)
-        pred = model(image)
-        loss = lossfunc(pred, label) * 100
+        with autocast():
+            pred = model(image)
+            loss = lossfunc(pred, label) * 100
+
         train_loss.append(loss.item())
-        loss.requires_grad_(True)
-        loss.backward(retain_graph=True)
-        # loss.backward()
-        optimizer.step()
+        
+        scaler.scale(loss).backward()
+        scaler.step(optimizer)
+        scaler.update()
+        # loss.requires_grad_(True)
+        # loss.backward(retain_graph=True)
+        # # loss.backward()
+        # optimizer.step()
         # pdb.set_trace()
         # for name, param in model.unet.named_parameters():
         #     if param.requires_grad:
@@ -151,6 +161,7 @@ if __name__ == "__main__":
         use_point_grid=PROMPT_GRID
     )
     optimizer = torch.optim.Adam(model.parameters(), lr=LR)
+    scaler = GradScaler()
     
     timestamp_str = datetime.datetime.now().strftime("%d%m%Y_%H:%M")
     

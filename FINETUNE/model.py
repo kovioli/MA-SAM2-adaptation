@@ -48,11 +48,13 @@ class SAM2_finetune(nn.Module):
             (64, 64),
         ]
         
-        for name, param in self.model.named_parameters():
-            param.requires_grad = False
-        for name, param in self.model.named_parameters():
-            if 'sam_mask_decoder' in name:
-                param.requires_grad = True
+        self.model.sam_mask_decoder.train(True)
+        
+        # for name, param in self.model.named_parameters():
+        #     param.requires_grad = False
+        # for name, param in self.model.named_parameters():
+        #     if 'sam_mask_decoder' in name:
+        #         param.requires_grad = True
         
     def forward(self, x):
         backbone_out = self.model.forward_image(x)
