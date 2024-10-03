@@ -54,18 +54,6 @@ class SAM2_finetune(nn.Module):
             if 'sam_mask_decoder' in name:
                 param.requires_grad = True
         
-    # def forward(self, x):
-    #     img_emb = self.model.image_encoder(x)
-    #     # img_emb = self.model.forward_image(x)
-    #     pred, _ = self.model.sam_mask_decoder(
-    #         image_embeddings=img_emb,
-    #         image_pe=self.model.sam_prompt_encoder.get_dense_pe(),
-    #         sparse_prompt_embeddings=self.se,
-    #         dense_prompt_embeddings=self.de,
-    #         multimask_output=False,
-    #         repeat_image=False,
-    #     )
-    #     return pred
     def forward(self, x):
         backbone_out = self.model.forward_image(x)
         _, vision_feats, _, _ = self.model._prepare_backbone_features(backbone_out)

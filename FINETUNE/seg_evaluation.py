@@ -30,7 +30,7 @@ model = SAM2_finetune(
     device=DEVICE,
     use_point_grid=PROMPT_GRID
 )
-TS = '03102024_08:58'
+TS = '03102024_14:04'
 model_path = os.path.join(
     '/media',
     'hdd1',
