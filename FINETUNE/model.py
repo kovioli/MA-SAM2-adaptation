@@ -28,9 +28,9 @@ def build_point_grid(n_per_side: int) -> np.ndarray:
 
 
 class SAM2_finetune(nn.Module):
-    def __init__(self, model_cfg, ckpt_path, device):
+    def __init__(self, model_cfg, ckpt_path, device, use_point_grid=False):
         super(SAM2_finetune, self).__init__()
-        self.model = build_sam2(model_cfg, ckpt_path, device)
+        self.model = build_sam2(model_cfg, ckpt_path, device, mode='train')
         self.device = device
         self._transforms = SAM2Transforms(
             resolution=1024,
@@ -38,12 +38,21 @@ class SAM2_finetune(nn.Module):
             max_hole_area=0.0,
             max_sprinkle_area=0.0,
         )
-        self.se, self.de = self.create_point_embeddings()
+        if use_point_grid:
+            self.se, self.de = self.create_point_embeddings()
+        else:
+            self.se, self.de = self.model.sam_prompt_encoder(None, None, None)
         self._bb_feat_sizes = [
             (256, 256),
             (128, 128),
             (64, 64),
-        ]   
+        ]
+        
+        for name, param in self.model.named_parameters():
+            param.requires_grad = False
+        for name, param in self.model.named_parameters():
+            if 'sam_mask_decoder' in name:
+                param.requires_grad = True
         
     # def forward(self, x):
     #     img_emb = self.model.image_encoder(x)
@@ -60,7 +69,7 @@ class SAM2_finetune(nn.Module):
     def forward(self, x):
         backbone_out = self.model.forward_image(x)
         _, vision_feats, _, _ = self.model._prepare_backbone_features(backbone_out)
-        vision_feats[-1] = vision_feats[-1] + self.model.no_mem_embed
+        vision_feats[-1] = vision_feats[-1] + self.model.no_mem_embed # TODO: CHECK IF THIS IS NEEDED
         feats = [
             feat.permute(1, 2, 0).view(1, -1, *feat_size)
             for feat, feat_size in zip(vision_feats[::-1], self._bb_feat_sizes[::-1])

@@ -6,7 +6,7 @@ from torch.utils.data import Dataset, Subset, ConcatDataset
 import torch
 import numpy as np
 from torchvision.transforms import ToTensor
-from FINETUNE.config import NOISE_VAR
+from FINETUNE.config import NOISE_VAR, PARTICLE_CLASS
 import mrcfile
 import torchvision.transforms.functional as TF
 
@@ -66,7 +66,7 @@ class MRCDataset(Dataset):
             self.label_volume = mrc.data.copy()
 
         # From the class_mask, extract voxels with value 13
-        self.label_volume = (self.label_volume == 13).astype(np.uint8)
+        self.label_volume = (self.label_volume == PARTICLE_CLASS).astype(np.uint8)
 
         # Normalize the input volume to [0, 1]
         # self.input_min = np.min(self.input_volume)
