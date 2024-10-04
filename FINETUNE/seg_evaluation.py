@@ -30,7 +30,7 @@ model = SAM2_finetune(
     device=DEVICE,
     use_point_grid=PROMPT_GRID
 )
-TS = '03102024_14:04'
+TS = '04102024_04:10'
 model_path = os.path.join(
     '/media',
     'hdd1',
@@ -142,7 +142,7 @@ for DS_ID in ds_list:
         "IoU": average_iou
     }
     all_results.append(result)
-
+all_predictions = np.stack(all_predictions, axis=0)  # Shape: (D, H, W)
 # # Save all results to a JSON file
 # json_file_path = os.path.join(json_result_folder, f'segmentation_results_{TS}.json')
 # os.makedirs(json_result_folder, exist_ok=True)
@@ -151,3 +151,4 @@ for DS_ID in ds_list:
 #     json.dump(all_results, f, indent=2)
 
 # print(f"Results saved to {json_file_path}")
+# %%
