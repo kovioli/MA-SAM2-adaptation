@@ -30,7 +30,7 @@ def read_mrc(file_path):
 
 # %%
 model_nr: int = 0
-filename: str = 'grandmodel.mrc'
+filename: str = 'reconstruction.mrc'
 FULL_PATH = os.path.join(
     '/media',
     'hdd1',
