@@ -10,13 +10,14 @@ from FINETUNE.config import NOISE_VAR, PARTICLE_CLASS
 import mrcfile
 import torchvision.transforms.functional as TF
 
-def create_multi_ds(main_folder, train_DS_IDs, val_DS_IDs, device='cuda'):
+def create_multi_ds(main_folder, train_DS_IDs, val_DS_IDs, particle_id: int, device='cuda'):
     train_datasets = []
     val_datasets = []
     for DS_ID in train_DS_IDs:
         ds = MRCDataset(
             main_folder=main_folder,
             DS_ID=DS_ID,
+            particle_id=particle_id,
             device=device
         )
         train_datasets.append(ds)
@@ -25,6 +26,7 @@ def create_multi_ds(main_folder, train_DS_IDs, val_DS_IDs, device='cuda'):
         ds = MRCDataset(
             main_folder=main_folder,
             DS_ID=DS_ID,
+            particle_id=particle_id,
             device=device
         )
         val_datasets.append(ds)
@@ -35,7 +37,7 @@ def create_multi_ds(main_folder, train_DS_IDs, val_DS_IDs, device='cuda'):
     print(f"Full train-DS length: {len(train_ds)}")
     
     val_indices = np.arange(len(val_ds))
-    val_indices = val_indices[::8]
+    val_indices = val_indices[::4]
     
     val_ds = Subset(val_ds, val_indices)
     
@@ -46,7 +48,7 @@ def create_multi_ds(main_folder, train_DS_IDs, val_DS_IDs, device='cuda'):
 
 
 class MRCDataset(Dataset):
-    def __init__(self, main_folder, DS_ID, device='cuda'):
+    def __init__(self, main_folder, DS_ID, particle_id: int, device='cuda'):
         """
         main_folder: str (e.g., '/media/hdd1/oliver/SHREC')
         DS_ID: str (e.g., 'model_0')
@@ -66,7 +68,7 @@ class MRCDataset(Dataset):
             self.label_volume = mrc.data.copy()
 
         # From the class_mask, extract voxels with value 13
-        self.label_volume = (self.label_volume == PARTICLE_CLASS).astype(np.uint8)
+        self.label_volume = (self.label_volume == particle_id).astype(np.uint8)
 
         # Normalize the input volume to [0, 1]
         # self.input_min = np.min(self.input_volume)

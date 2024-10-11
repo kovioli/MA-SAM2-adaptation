@@ -26,7 +26,8 @@ from config import (
     TRAIN_IDs,
     VAL_IDs,
     MODEL_DICT,
-    PROMPT_GRID
+    PROMPT_GRID,
+    particle_mapping
 )
 
 lossfunc = GeneralizedDiceLoss(sigmoid=True, reduction='mean')
@@ -148,73 +149,96 @@ def train(model,train_dataloader, test_dataloader, epoch, step):
     return step
 
 if __name__ == "__main__":
-    best_loss = float('inf')
-    best_iou = 1
-    best_dice = 1
-    epochs_wo_improvement = 0
+    multi_training_log_path = f'shrec2020_finetune_class_exploration_{len(TRAIN_IDs)}ds.log'
     
-    model = SAM2_finetune(
-        model_cfg=MODEL_DICT[MODEL_TYPE]['config'],
-        ckpt_path=MODEL_DICT[MODEL_TYPE]['ckpt'],
-        device=DEVICE,
-        use_point_grid=PROMPT_GRID
-    )
-    optimizer = torch.optim.Adam(model.parameters(), lr=LR)
-    scaler = GradScaler()
+    for particle_name, p_id in particle_mapping.items():
+        if particle_name == "background":
+            print("Skipping background")
+            continue
     
-    timestamp_str = datetime.datetime.now().strftime("%d%m%Y_%H:%M")
+        best_loss = float('inf')
+        best_iou = 1
+        best_dice = 1
+        epochs_wo_improvement = 0
+        step = 0
     
-    print("TIMESTAMP: ", timestamp_str)
-    model_save_dir = os.path.join(
-        '/media',
-        'hdd1',
-        'oliver',
-        'SAM2_SHREC_FINETUNE',
-        'checkpoints',
-        timestamp_str
-    )
-    os.makedirs(model_save_dir, exist_ok=True)
+        model = SAM2_finetune(
+            model_cfg=MODEL_DICT[MODEL_TYPE]['config'],
+            ckpt_path=MODEL_DICT[MODEL_TYPE]['ckpt'],
+            device=DEVICE,
+            use_point_grid=PROMPT_GRID
+        )
+        
+        optimizer = torch.optim.Adam(model.parameters(), lr=LR)
+        scaler = GradScaler()
+    
+        timestamp_str = datetime.datetime.now().strftime("%d%m%Y_%H:%M")
+        print(f"Training particle '{particle_name}' with id {p_id} at {timestamp_str}")
+        
+        with open(multi_training_log_path, 'a') as f:
+            f.write(f"Particle id: {p_id}, Name: {particle_name}, Training timestamp: {timestamp_str}\n")
 
-    #os.makedirs(os.path.dirname(model_save_dir), exist_ok=True)
-    writer = SummaryWriter(log_dir=os.path.join('/media', 'hdd1', 'oliver', 'SAM2_SHREC_FINETUNE', 'logs', timestamp_str))
+        model_save_dir = os.path.join(
+            '/media',
+            'hdd1',
+            'oliver',
+            'SAM2_SHREC_FINETUNE',
+            multi_training_log_path.split('.')[0],
+            'checkpoints',
+            timestamp_str
+        )
+        os.makedirs(model_save_dir, exist_ok=True)
+        writer = SummaryWriter(
+            log_dir=os.path.join(
+                '/media',
+                'hdd1',
+                'oliver',
+                'SAM2_SHREC_FINETUNE',
+                multi_training_log_path.split('.')[0],
+                'logs',
+                timestamp_str
+            )
+        )
     
-    train_data, val_data = create_multi_ds(
-        main_folder=os.path.join('/media', 'hdd1', 'oliver', 'SHREC'),
-        train_DS_IDs=TRAIN_IDs,
-        val_DS_IDs=VAL_IDs,
-        device=DEVICE
-    )
-    train_dataloader = torch.utils.data.DataLoader(train_data, batch_size=BS, shuffle=True)
-    val_dataloader = torch.utils.data.DataLoader(val_data, batch_size=BS, shuffle=False)
-    print(f"Loader lengths: train: {len(train_dataloader)}, val: {len(val_dataloader)}")
-
-    step = 0
+        train_data, val_data = create_multi_ds(
+            main_folder=os.path.join('/media', 'hdd1', 'oliver', 'shrec2020_full_dataset'),
+            train_DS_IDs=TRAIN_IDs,
+            val_DS_IDs=VAL_IDs,
+            particle_id=p_id,
+            device=DEVICE
+        )
+        train_dataloader = torch.utils.data.DataLoader(train_data, batch_size=BS, shuffle=True)
+        val_dataloader = torch.utils.data.DataLoader(val_data, batch_size=BS, shuffle=False)
+        print(f"Loader lengths: train: {len(train_dataloader)}, val: {len(val_dataloader)}")
     
-    for epoch in range(EPOCH):
-        epoch_start_time = time.time()
-        step = train(model, train_dataloader, val_dataloader, epoch, step)
-        elapsed_train = time.time() - epoch_start_time
-        val_loss, iou, dice = evaluate(model, val_dataloader)
-        elapsed_eval = time.time() - epoch_start_time - elapsed_train
-        print(f"Time taken for epoch {epoch}: train: {int(elapsed_train)}s; eval: {int(elapsed_eval)}s")
+        for epoch in range(EPOCH):
+            epoch_start_time = time.time()
+            step = train(model, train_dataloader, val_dataloader, epoch, step)
+            elapsed_train = time.time() - epoch_start_time
+            val_loss, iou, dice = evaluate(model, val_dataloader)
+            elapsed_eval = time.time() - epoch_start_time - elapsed_train
+            print(f"Time taken for epoch {epoch}: train: {int(elapsed_train)}s; eval: {int(elapsed_eval)}s")
 
-        # Check if this epoch is the best
-        if val_loss < best_loss - MIN_DELTA * 100: # loss is multiplied by 100 during evaluate()
-            best_loss = val_loss
-            best_iou = iou
-            best_dice = dice
-            epochs_wo_improvement = 0
-            print(f"New best epoch! --> {epoch} with validation loss: {val_loss:.4f}, IOU: {iou:.4f}, Dice: {dice:.4f}")
-            torch.save(model.state_dict(), os.path.join(model_save_dir, f'best_model.pth'))
-        else:
-            epochs_wo_improvement += 1
-            print(f"Epoch {epoch} was not the best. Epochs without improvement: {epochs_wo_improvement}")
+            # Check if this epoch is the best
+            if val_loss < best_loss - MIN_DELTA * 100: # loss is multiplied by 100 during evaluate()
+                best_loss = val_loss
+                best_iou = iou
+                best_dice = dice
+                epochs_wo_improvement = 0
+                print(f"New best epoch! --> {epoch} with validation loss: {val_loss:.4f}, IOU: {iou:.4f}, Dice: {dice:.4f}")
+                torch.save(model.state_dict(), os.path.join(model_save_dir, f'best_model.pth'))
+            else:
+                epochs_wo_improvement += 1
+                print(f"Epoch {epoch} was not the best. Epochs without improvement: {epochs_wo_improvement}")
 
-        # Early stopping check
-        if epochs_wo_improvement >= PATIENCE:
-            print(f"Early stopping triggered after {PATIENCE} epochs without improvement")
-            break
-    writer.close()
-    print("Training finished!")
-    print(f"Best validation loss: {best_loss:.4f}, Best IOU: {best_iou:.4f}, Best Dice: {best_dice:.4f}")
+            # Early stopping check
+            if epochs_wo_improvement >= PATIENCE:
+                print(f"Early stopping triggered after {PATIENCE} epochs without improvement")
+                break
+        writer.close()
+        print("Training finished!")
+        print(f"Best validation loss: {best_loss:.4f}, Best IOU: {best_iou:.4f}, Best Dice: {best_dice:.4f}")
+        
+        optimizer.zero_grad()
+        del model
         
