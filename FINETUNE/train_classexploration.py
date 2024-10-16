@@ -1,4 +1,4 @@
-# %%
+# %%
 import os
 import time
 import torch
@@ -27,12 +27,13 @@ from config import (
     VAL_IDs,
     MODEL_DICT,
     PROMPT_GRID,
-    particle_mapping
+    particle_mapping,
 )
 
-lossfunc = GeneralizedDiceLoss(sigmoid=True, reduction='mean')
+lossfunc = GeneralizedDiceLoss(sigmoid=True, reduction="mean")
 
-def evaluate(model,val_dataloader):
+
+def evaluate(model, val_dataloader):
     model.eval()
     val_loss = []
     iou_list = []
@@ -42,27 +43,31 @@ def evaluate(model,val_dataloader):
         for image, label in val_dataloader:
             image = image.to(device=DEVICE)
             label = label.to(device=DEVICE)
-            
+
             with autocast():
                 pred = model(image)
-                loss = lossfunc(pred,label) * 100
-                
+                loss = lossfunc(pred, label) * 100
+
             val_loss.append(loss.item())
-            iou,dice = eval_seg(pred, label, THRESHOLD)
+            iou, dice = eval_seg(pred, label, THRESHOLD)
             iou_list.append(iou)
             dice_list.append(dice)
 
         loss_mean = np.average(val_loss)
         iou_mean = np.average(iou_list)
         dice_mean = np.average(dice_list)
-        writer.add_scalar('Validation/Loss', loss_mean, epoch)
-        writer.add_scalar('Validation/IoU', iou_mean, epoch)
-        writer.add_scalar('Validation/Dice', dice_mean, epoch)
+        writer.add_scalar("Validation/Loss", loss_mean, epoch)
+        writer.add_scalar("Validation/IoU", iou_mean, epoch)
+        writer.add_scalar("Validation/Dice", dice_mean, epoch)
 
     print(
-        f"| epoch {epoch:3d} | "f"val loss {loss_mean:5.2f} | "f"iou {iou_mean:3.2f}  | "f"dice {dice_mean:3.2f}"
+        f"| epoch {epoch:3d} | "
+        f"val loss {loss_mean:5.2f} | "
+        f"iou {iou_mean:3.2f}  | "
+        f"dice {dice_mean:3.2f}"
     )
     return loss_mean, iou_mean, dice_mean
+
 
 def evaluate_stepwise(model, val_dataloader, step):
     model.eval()
@@ -73,11 +78,11 @@ def evaluate_stepwise(model, val_dataloader, step):
         for image, label in val_dataloader:
             image = image.to(device=DEVICE)
             label = label.to(device=DEVICE)
-            
+
             with autocast():
                 pred = model(image)
                 loss = lossfunc(pred, label) * 100
-            
+
             val_loss.append(loss.item())
             iou, dice = eval_seg(pred, label, THRESHOLD)
             iou_list.append(iou)
@@ -86,12 +91,13 @@ def evaluate_stepwise(model, val_dataloader, step):
             loss_mean = np.average(val_loss)
             iou_mean = np.average(iou_list)
             dice_mean = np.average(dice_list)
-            writer.add_scalar('ValStep/Loss', loss_mean, step)
-            writer.add_scalar('ValStep/IoU', iou_mean, step)
-            writer.add_scalar('ValStep/Dice', dice_mean, step)
+            writer.add_scalar("ValStep/Loss", loss_mean, step)
+            writer.add_scalar("ValStep/IoU", iou_mean, step)
+            writer.add_scalar("ValStep/Dice", dice_mean, step)
     model.train()
-    
-def train(model,train_dataloader, test_dataloader, epoch, step):
+
+
+def train(model, train_dataloader, test_dataloader, epoch, step):
     model.train()
     train_loss = []
     iou_list = []
@@ -107,7 +113,7 @@ def train(model,train_dataloader, test_dataloader, epoch, step):
             loss = lossfunc(pred, label) * 100
 
         train_loss.append(loss.item())
-        
+
         scaler.scale(loss).backward()
         scaler.step(optimizer)
         scaler.update()
@@ -120,125 +126,154 @@ def train(model,train_dataloader, test_dataloader, epoch, step):
         #     if param.requires_grad:
         #         print(f"Gradient for {name}: {param.grad.mean().item()}")
         # print("\n\n")
-        
+
         iou, dice = eval_seg(pred, label, THRESHOLD)
         iou_list.append(iou)
         dice_list.append(dice)
-        
+
         if step % LOG_EVERY_STEP == 0:
             loss_mean = np.average(train_loss[-LOG_EVERY_STEP:])
             iou_mean = np.average(iou_list[-LOG_EVERY_STEP:])
             dice_mean = np.average(dice_list[-LOG_EVERY_STEP:])
-            writer.add_scalar('TrainStep/Loss', loss_mean, step)
-            writer.add_scalar('TrainStep/IoU', iou_mean, step)
-            writer.add_scalar('TrainStep/Dice', dice_mean, step)
+            writer.add_scalar("TrainStep/Loss", loss_mean, step)
+            writer.add_scalar("TrainStep/IoU", iou_mean, step)
+            writer.add_scalar("TrainStep/Dice", dice_mean, step)
             evaluate_stepwise(model, test_dataloader, step)
-        
+
         step += 1
 
     loss_mean = np.average(train_loss)
     iou_mean = np.average(iou_list)
     dice_mean = np.average(dice_list)
-    writer.add_scalar('Train/Loss', loss_mean, epoch)
-    writer.add_scalar('Train/IoU', iou_mean, epoch)
-    writer.add_scalar('Train/Dice', dice_mean, epoch)
+    writer.add_scalar("Train/Loss", loss_mean, epoch)
+    writer.add_scalar("Train/IoU", iou_mean, epoch)
+    writer.add_scalar("Train/Dice", dice_mean, epoch)
 
     print(
-        f"| epoch {epoch:3d} | "f"train loss {loss_mean:5.2f} | "f"iou {iou_mean:3.2f}  | "f"dice {dice_mean:3.2f}"
+        f"| epoch {epoch:3d} | "
+        f"train loss {loss_mean:5.2f} | "
+        f"iou {iou_mean:3.2f}  | "
+        f"dice {dice_mean:3.2f}"
     )
     return step
 
+
 if __name__ == "__main__":
-    multi_training_log_path = f'shrec2020_finetune_class_exploration_{len(TRAIN_IDs)}ds.log'
-    
+    multi_training_log_path = (
+        f"shrec2020_finetune_class_exploration_{len(TRAIN_IDs)}ds.log"
+    )
+
     for particle_name, p_id in particle_mapping.items():
-        if particle_name == "background":
-            print("Skipping background")
+        if particle_name != "background":
+            print("Skipping non- background")
             continue
-    
-        best_loss = float('inf')
+
+        best_loss = float("inf")
         best_iou = 1
         best_dice = 1
         epochs_wo_improvement = 0
         step = 0
-    
+
         model = SAM2_finetune(
-            model_cfg=MODEL_DICT[MODEL_TYPE]['config'],
-            ckpt_path=MODEL_DICT[MODEL_TYPE]['ckpt'],
+            model_cfg=MODEL_DICT[MODEL_TYPE]["config"],
+            ckpt_path=MODEL_DICT[MODEL_TYPE]["ckpt"],
             device=DEVICE,
-            use_point_grid=PROMPT_GRID
+            use_point_grid=PROMPT_GRID,
         )
-        
+
         optimizer = torch.optim.Adam(model.parameters(), lr=LR)
         scaler = GradScaler()
-    
+
         timestamp_str = datetime.datetime.now().strftime("%d%m%Y_%H:%M")
         print(f"Training particle '{particle_name}' with id {p_id} at {timestamp_str}")
-        
-        with open(multi_training_log_path, 'a') as f:
-            f.write(f"Particle id: {p_id}, Name: {particle_name}, Training timestamp: {timestamp_str}\n")
+
+        with open(multi_training_log_path, "a") as f:
+            f.write(
+                f"Particle id: {p_id}, Name: {particle_name}, Training timestamp: {timestamp_str}\n"
+            )
 
         model_save_dir = os.path.join(
-            '/media',
-            'hdd1',
-            'oliver',
-            'SAM2_SHREC_FINETUNE',
-            multi_training_log_path.split('.')[0],
-            'checkpoints',
-            timestamp_str
+            "/media",
+            "hdd1",
+            "oliver",
+            "SAM2_SHREC_FINETUNE",
+            multi_training_log_path.split(".")[0],
+            "checkpoints",
+            timestamp_str,
         )
         os.makedirs(model_save_dir, exist_ok=True)
         writer = SummaryWriter(
             log_dir=os.path.join(
-                '/media',
-                'hdd1',
-                'oliver',
-                'SAM2_SHREC_FINETUNE',
-                multi_training_log_path.split('.')[0],
-                'logs',
-                timestamp_str
+                "/media",
+                "hdd1",
+                "oliver",
+                "SAM2_SHREC_FINETUNE",
+                multi_training_log_path.split(".")[0],
+                "logs",
+                timestamp_str,
             )
         )
-    
+
         train_data, val_data = create_multi_ds(
-            main_folder=os.path.join('/media', 'hdd1', 'oliver', 'shrec2020_full_dataset'),
+            main_folder=os.path.join(
+                "/media", "hdd1", "oliver", "shrec2020_full_dataset"
+            ),
             train_DS_IDs=TRAIN_IDs,
             val_DS_IDs=VAL_IDs,
             particle_id=p_id,
-            device=DEVICE
+            device=DEVICE,
         )
-        train_dataloader = torch.utils.data.DataLoader(train_data, batch_size=BS, shuffle=True)
-        val_dataloader = torch.utils.data.DataLoader(val_data, batch_size=BS, shuffle=False)
-        print(f"Loader lengths: train: {len(train_dataloader)}, val: {len(val_dataloader)}")
-    
+        train_dataloader = torch.utils.data.DataLoader(
+            train_data, batch_size=BS, shuffle=True
+        )
+        val_dataloader = torch.utils.data.DataLoader(
+            val_data, batch_size=BS, shuffle=False
+        )
+        print(
+            f"Loader lengths: train: {len(train_dataloader)}, val: {len(val_dataloader)}"
+        )
+
         for epoch in range(EPOCH):
             epoch_start_time = time.time()
             step = train(model, train_dataloader, val_dataloader, epoch, step)
             elapsed_train = time.time() - epoch_start_time
             val_loss, iou, dice = evaluate(model, val_dataloader)
             elapsed_eval = time.time() - epoch_start_time - elapsed_train
-            print(f"Time taken for epoch {epoch}: train: {int(elapsed_train)}s; eval: {int(elapsed_eval)}s")
+            print(
+                f"Time taken for epoch {epoch}: train: {int(elapsed_train)}s; eval: {int(elapsed_eval)}s"
+            )
 
             # Check if this epoch is the best
-            if val_loss < best_loss - MIN_DELTA * 100: # loss is multiplied by 100 during evaluate()
+            if (
+                val_loss < best_loss - MIN_DELTA * 100
+            ):  # loss is multiplied by 100 during evaluate()
                 best_loss = val_loss
                 best_iou = iou
                 best_dice = dice
                 epochs_wo_improvement = 0
-                print(f"New best epoch! --> {epoch} with validation loss: {val_loss:.4f}, IOU: {iou:.4f}, Dice: {dice:.4f}")
-                torch.save(model.state_dict(), os.path.join(model_save_dir, f'best_model.pth'))
+                print(
+                    f"New best epoch! --> {epoch} with validation loss: {val_loss:.4f}, IOU: {iou:.4f}, Dice: {dice:.4f}"
+                )
+                torch.save(
+                    model.state_dict(), os.path.join(model_save_dir, f"best_model.pth")
+                )
             else:
                 epochs_wo_improvement += 1
-                print(f"Epoch {epoch} was not the best. Epochs without improvement: {epochs_wo_improvement}")
+                print(
+                    f"Epoch {epoch} was not the best. Epochs without improvement: {epochs_wo_improvement}"
+                )
 
             # Early stopping check
             if epochs_wo_improvement >= PATIENCE:
-                print(f"Early stopping triggered after {PATIENCE} epochs without improvement")
+                print(
+                    f"Early stopping triggered after {PATIENCE} epochs without improvement"
+                )
                 break
         writer.close()
         print("Training finished!")
-        print(f"Best validation loss: {best_loss:.4f}, Best IOU: {best_iou:.4f}, Best Dice: {best_dice:.4f}")
-        
+        print(
+            f"Best validation loss: {best_loss:.4f}, Best IOU: {best_iou:.4f}, Best Dice: {best_dice:.4f}"
+        )
+
         optimizer.zero_grad()
         del model
-        
