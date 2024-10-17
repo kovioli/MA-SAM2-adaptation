@@ -35,10 +35,19 @@ MIN_DELTA = 0.01
 
 # data
 THRESHOLD = (0.1, 0.3, 0.5, 0.7, 0.9)
-# TRAIN_IDs = ['model_0', 'model_1', 'model_2', 'model_3', 'model_4', 'model_5', 'model_6', 'model_7']
-# TRAIN_IDs = ['model_0', 'model_1', 'model_2', 'model_3']
-TRAIN_IDs = ["model_0", "model_1"]
-# TRAIN_IDs = ['model_0']
+TRAIN_IDs = [
+    "model_0",
+    "model_1",
+    "model_2",
+    "model_3",
+    "model_4",
+    "model_5",
+    "model_6",
+    "model_7",
+]
+# TRAIN_IDs = ["model_0", "model_1", "model_2", "model_3"]
+# TRAIN_IDs = ["model_0", "model_1"]
+# TRAIN_IDs = ["model_0"]
 VAL_IDs = ["model_8"]
 NOISE_VAR = 0.0
 PROMPT_GRID = False

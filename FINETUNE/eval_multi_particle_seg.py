@@ -27,7 +27,7 @@ def compute_iou(pred, target, eps=1e-6):
     return iou.item()
 
 
-particle_ts_mapping = {
+particle_ts_mapping_grandmodel = {
     "2ds": [
         {"particle_id": 1, "ts": "08102024_06:23", "particle_name": "3cf3"},
         {"particle_id": 2, "ts": "08102024_07:00", "particle_name": "1s3x"},
@@ -58,6 +58,23 @@ particle_ts_mapping = {
     ],
 }
 
+
+particle_ts_mapping_reconstruction = {
+    "8ds_tiny": [
+        {"particle_id": 1, "particle_name": "3cf3", "ts": "16102024_16:26"},
+        {"particle_id": 2, "particle_name": "1s3x", "ts": "16102024_17:16"},
+        {"particle_id": 3, "particle_name": "1u6g", "ts": "16102024_17:59"},
+        {"particle_id": 4, "particle_name": "4cr2", "ts": "16102024_19:15"},
+        {"particle_id": 5, "particle_name": "1qvr", "ts": "16102024_20:06"},
+        {"particle_id": 6, "particle_name": "3h84", "ts": "16102024_20:52"},
+        {"particle_id": 7, "particle_name": "2cg9", "ts": "16102024_21:36"},
+        {"particle_id": 8, "particle_name": "3qm1", "ts": "16102024_22:20"},
+        {"particle_id": 9, "particle_name": "3gl1", "ts": "16102024_23:43"},
+        {"particle_id": 10, "particle_name": "3d2f", "ts": "17102024_00:26"},
+        {"particle_id": 11, "particle_name": "4d8q", "ts": "17102024_01:15"},
+        {"particle_id": 12, "particle_name": "1bxn", "ts": "17102024_02:30"},
+    ]
+}
 test_ds_name = "model_9"
 
 
@@ -72,17 +89,17 @@ model = SAM2_finetune(
 )
 
 
-run_id = "8ds"
+run_id = "8ds_tiny"
 base_folder = os.path.join(
     "/media",
     "hdd1",
     "oliver",
     "SAM2_SHREC_FINETUNE",
-    f"shrec2020_finetune_class_exploration_{run_id}",
+    f"shrec2020_finetune_class_exploration_reconstruction_{run_id}",
 )
 
 all_results = []
-for particle_training in particle_ts_mapping.get(run_id):
+for particle_training in particle_ts_mapping_reconstruction.get(run_id):
     print(
         f"Processing particle {particle_training.get('particle_id')} with TS {particle_training.get('ts')}"
     )

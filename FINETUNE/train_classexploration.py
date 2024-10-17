@@ -159,13 +159,11 @@ def train(model, train_dataloader, test_dataloader, epoch, step):
 
 
 if __name__ == "__main__":
-    multi_training_log_path = (
-        f"shrec2020_finetune_class_exploration_{len(TRAIN_IDs)}ds.log"
-    )
+    multi_training_log_path = f"shrec2020_finetune_class_exploration_reconstruction_{len(TRAIN_IDs)}ds_{MODEL_TYPE}.log"
 
     for particle_name, p_id in particle_mapping.items():
-        if particle_name != "background":
-            print("Skipping non- background")
+        if particle_name == "background":
+            print("Skipping background")
             continue
 
         best_loss = float("inf")
