@@ -5,14 +5,14 @@ import matplotlib.pyplot as plt
 import struct
 import numpy as np
 
-TOMOGRAM_PATH = os.path.join(
-    "/media",
-    "hdd1",
-    "oliver",
-    "shrec2020_full_dataset",
-    "model_9",
-    f"class_mask.mrc",
-)
+# TOMOGRAM_PATH = os.path.join(
+#     "/media",
+#     "hdd1",
+#     "oliver",
+#     "shrec2020_full_dataset",
+#     "model_0",
+#     f"reconstruction.mrc",
+# )
 
 # TOMOGRAM_PATH = os.path.join(
 #     "/media",
@@ -23,6 +23,14 @@ TOMOGRAM_PATH = os.path.join(
 #     "PREDICT",
 #     "model_9_particle_1.mrc",
 # )
+
+TOMOGRAM_PATH = os.path.join(
+    "/media",
+    "hdd1",
+    "oliver",
+    "topaz_test",
+    f"reconstruction.mrc",
+)
 
 
 def read_mrc(file_path):

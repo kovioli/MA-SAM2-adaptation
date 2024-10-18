@@ -367,21 +367,21 @@ particle_id_mapping = [
 
 # %%
 
+mol_weight_ratio = 0.55
 volume_ratio = 0.2
-mol_weight_ratio = 0.5
-
-output_file = f"/oliver/SAM2/PARTICLE_COORDS_reconstruction_ds8_tiny.txt"
+ds_name = "denoised_8ds_tiny"
+output_file = f"/oliver/SAM2/PARTICLE_COORDS_reconstruction_{ds_name}.txt"
 if os.path.exists(output_file):
     os.remove(output_file)
 
 for p_map in particle_id_mapping:
     cluster_and_clean(
         threshold=0.5,
-        # min_cluster_size=int(volume_ratio * p_map["volume"]),
-        min_cluster_size=int(mol_weight_ratio * p_map["mol_weight"]),
+        min_cluster_size=int(volume_ratio * p_map["volume"]),
+        # min_cluster_size=int(mol_weight_ratio * p_map["mol_weight"]),
         max_cluster_size=None,
         clustering_connectivity=1,
-        prediction_dir="/media/hdd1/oliver/SAM2_SHREC_FINETUNE/shrec2020_finetune_class_exploration_reconstruction_8ds_tiny/PREDICT/",
+        prediction_dir=f"/media/hdd1/oliver/SAM2_SHREC_FINETUNE/shrec2020_finetune_class_exploration_reconstruction_{ds_name}/PREDICT/",
         prediction_file=f"model_9_particle_{p_map['particle_id']}.mrc",
         particle_id=p_map["particle_name"],
         output_file=output_file,

@@ -1,7 +1,7 @@
 import torch
 
 # settings
-DEVICE_NUM = 0
+DEVICE_NUM = 3
 DEVICE = torch.device(f"cuda:{DEVICE_NUM}" if torch.cuda.is_available() else "cpu")
 
 # hyperparams
