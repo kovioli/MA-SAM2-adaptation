@@ -102,6 +102,20 @@ particle_ts_mapping_reconstruction = {
         {"particle_id": 11, "particle_name": "4d8q", "ts": "17102024_16:31"},
         {"particle_id": 12, "particle_name": "1bxn", "ts": "17102024_17:29"},
     ],
+    "denoised_g1_8ds_tiny": [
+        {"particle_id": 1, "particle_name": "3cf3", "ts": "18102024_13:35"},
+        {"particle_id": 2, "particle_name": "1s3x", "ts": "18102024_14:20"},
+        {"particle_id": 3, "particle_name": "1u6g", "ts": "18102024_15:18"},
+        {"particle_id": 4, "particle_name": "4cr2", "ts": "18102024_15:58"},
+        {"particle_id": 5, "particle_name": "1qvr", "ts": "18102024_16:38"},
+        {"particle_id": 6, "particle_name": "3h84", "ts": "18102024_17:19"},
+        {"particle_id": 7, "particle_name": "2cg9", "ts": "18102024_18:03"},
+        {"particle_id": 8, "particle_name": "3qm1", "ts": "18102024_18:48"},
+        {"particle_id": 9, "particle_name": "3gl1", "ts": "18102024_20:02"},
+        {"particle_id": 10, "particle_nName": "3d2f", "ts": "18102024_20:47"},
+        {"particle_id": 11, "particle_nName": "4d8q", "ts": "18102024_21:34"},
+        {"particle_id": 12, "particle_nName": "1bxn", "ts": "18102024_22:56"},
+    ],
 }
 test_ds_name = "model_9"
 
@@ -117,7 +131,7 @@ model = SAM2_finetune(
 )
 
 
-run_id = "denoised_8ds_tiny"
+run_id = "denoised_g1_8ds_tiny"
 base_folder = os.path.join(
     "/media",
     "hdd1",

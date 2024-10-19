@@ -9,7 +9,7 @@ base_folder = os.path.join(
     "hdd1",
     "oliver",
     "SAM2_SHREC_FINETUNE",
-    "shrec2020_finetune_class_exploration_reconstruction_denoised_8ds_tiny",
+    "shrec2020_finetune_class_exploration_reconstruction_denoised_g1_8ds_tiny",
 )
 with open(os.path.join(base_folder, "class_exploration_results.json"), "r") as f:
     data = json.load(f)
