@@ -82,7 +82,7 @@ class MRCDataset(Dataset):
         # Paths to the mrc files
         data_dir = os.path.join(main_folder, DS_ID)
         # input_file = os.path.join(data_dir, 'grandmodel.mrc')
-        input_file = os.path.join(data_dir, "reconstruction_topaz_denoised_g1.mrc")
+        input_file = os.path.join(data_dir, "reconstruction.mrc")
         label_file = os.path.join(data_dir, "class_mask.mrc")
 
         # Read the mrc files
