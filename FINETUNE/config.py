@@ -1,19 +1,28 @@
 import torch
 
+# technical
 DEVICE_NUM = 3
 DEVICE = torch.device(f"cuda:{DEVICE_NUM}" if torch.cuda.is_available() else "cpu")
-THRESHOLD = (0.1, 0.3, 0.5, 0.7, 0.9)
+
+# hyperparameters
 EPOCH = 80
 LR = 1e-4
 BS = 1
+
+# data
 TRAIN_ID = "TS_0001"
+TRAIN_RATIO = 0.8
+NR_SLICES = 128
+PROMPT_GRID = False
+
+# logging
 LOG_EVERY_STEP = 100
 PATIENCE = 10
 MIN_DELTA = 0.01
-TRAIN_RATIO = 0.8
-MODEL_TYPE = "tiny"  # 'tiny', 'small', 'base', 'large'
-EIGHTH = 8
+THRESHOLD = (0.1, 0.3, 0.5, 0.7, 0.9)
 
+# model
+MODEL_TYPE = "large"  # 'tiny', 'small', 'base', 'large'
 MODEL_DICT = {
     "tiny": {
         "config": "sam2_hiera_t.yaml",
@@ -32,4 +41,3 @@ MODEL_DICT = {
         "ckpt": "/media/hdd1/oliver/SAM2/checkpoints/sam2_hiera_large.pt",
     },
 }
-PROMPT_GRID = False

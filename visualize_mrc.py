@@ -15,17 +15,35 @@ PRED_PATH = os.path.join(
     f"{DS_NAME}.mrc",
 )
 
-TOMOGRAM_PATH = os.path.join(
-    "/media", "hdd1", "oliver", "EMPIAR_clean", "tomograms", f"{DS_NAME}.mrc"
+PRED_PATH = os.path.join(
+    "/media",
+    "hdd1",
+    "oliver",
+    "DeePiCt",
+    "PREDICT",
+    "predictions",
+    "test_holdout_1_best",
+    "TS_0002",
+    "ribo",
+    "probability_map.mrc",
 )
 
-FAS_PATH = os.path.join(
-    "/media", "hdd1", "oliver", "EMPIAR_clean", "ribosomes", f"{DS_NAME}.mrc"
-)
-
-with mrcfile.open(PRED_PATH) as mrc, mrcfile.open(TOMOGRAM_PATH) as mrc_tomo:
-
+with mrcfile.open(PRED_PATH) as mrc:
     pred = mrc.data
+    print(f"PRED SHAPE: {pred.shape}")
+
+# %%
+
+
+TOMOGRAM_PATH = os.path.join("/media", "hdd1", "oliver", "EMPIAR", f"{DS_NAME}.rec")
+
+RIBO_PATH = os.path.join(
+    "/media", "hdd1", "oliver", "EMPIAR", f"{DS_NAME}_cyto_ribosomes.mrc"
+)
+
+with mrcfile.open(RIBO_PATH) as mrc, mrcfile.open(TOMOGRAM_PATH) as mrc_tomo:
+
+    ribo = mrc.data
     tomo = mrc_tomo.data
-    print(f"PRED SHAPE: {pred.shape} | TOMO SHAPE: {tomo.shape}")
+    print(f"RIBO SHAPE: {ribo.shape} | TOMO SHAPE: {tomo.shape}")
 # %%
