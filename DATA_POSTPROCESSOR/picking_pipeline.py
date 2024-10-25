@@ -38,7 +38,7 @@ threshold_list = np.arange(0.65, 0.9, 0.025)
 # threshold_list = [0.5]
 # threshold_list = [0.00001]
 if __name__ == "__main__":
-    NR_SLICES = 64
+    NR_SLICES = 32
 
     with open(f"/oliver/SAM2/log_s{NR_SLICES}.csv", "r") as file:
         csv_data = file.read()
