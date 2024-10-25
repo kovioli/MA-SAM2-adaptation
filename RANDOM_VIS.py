@@ -1,99 +1,93 @@
 # %%
+import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Data extracted from the three files
-all_runs = {
-    "Run 1": [
-        {"ds_name": "TS_0002", "F1": 0.6222394420767143},
-        {"ds_name": "TS_0003", "F1": 0.5876923076923077},
-        {"ds_name": "TS_0004", "F1": 0.562754632671836},
-        {"ds_name": "TS_0005", "F1": 0.6499665998663994},
-        {"ds_name": "TS_0006", "F1": 0.6695517774343123},
-        {"ds_name": "TS_0007", "F1": 0.46168312176774806},
-        {"ds_name": "TS_0008", "F1": 0.615257504819609},
-        {"ds_name": "TS_0009", "F1": 0.6564330911647527},
-        {"ds_name": "TS_0010", "F1": 0.6103516765977334},
-    ],
-    "Run 2": [
-        {"ds_name": "TS_0002", "F1": 0.6929667264395298},
-        {"ds_name": "TS_0003", "F1": 0.5520817447003202},
-        {"ds_name": "TS_0004", "F1": 0.7085597826086958},
-        {"ds_name": "TS_0005", "F1": 0.669466806673667},
-        {"ds_name": "TS_0006", "F1": 0.6141498216409037},
-        {"ds_name": "TS_0007", "F1": 0.317780580075662},
-        {"ds_name": "TS_0008", "F1": 0.7131120604666448},
-        {"ds_name": "TS_0009", "F1": 0.6173410404624278},
-        {"ds_name": "TS_0010", "F1": 0.5788946958745691},
-    ],
-    "Run 3": [
-        {"ds_name": "TS_0002", "F1": 0.7881528374406511},
-        {"ds_name": "TS_0003", "F1": 0.7408235513322154},
-        {"ds_name": "TS_0004", "F1": 0.6694352159468439},
-        {"ds_name": "TS_0005", "F1": 0.7913884725439433},
-        {"ds_name": "TS_0006", "F1": 0.795698924731183},
-        {"ds_name": "TS_0007", "F1": 0.5342394145321485},
-        {"ds_name": "TS_0008", "F1": 0.6008151522416686},
-        {"ds_name": "TS_0009", "F1": 0.7827748383303939},
-        {"ds_name": "TS_0010", "F1": 0.7682100898410503},
-    ],
-    "Run 4": [
-        {"ds_name": "TS_0002", "F1": 0.6812842599843383},
-        {"ds_name": "TS_0003", "F1": 0.7253705318221446},
-        {"ds_name": "TS_0004", "F1": 0.21939680662329986},
-        {"ds_name": "TS_0005", "F1": 0.749093107617896},
-        {"ds_name": "TS_0006", "F1": 0.7485477178423237},
-        {"ds_name": "TS_0007", "F1": 0.5916197623514696},
-        {"ds_name": "TS_0008", "F1": 0.22855333966445077},
-        {"ds_name": "TS_0009", "F1": 0.7256870166200429},
-        {"ds_name": "TS_0010", "F1": 0.7570818167431554},
-    ],
-    "Run 5": [
-        {"ds_name": "TS_0002", "F1": 0.7793448589626932},
-        {"ds_name": "TS_0003", "F1": 0.7382198952879582},
-        {"ds_name": "TS_0004", "F1": 0.6113301514837103},
-        {"ds_name": "TS_0005", "F1": 0.7821043910521955},
-        {"ds_name": "TS_0006", "F1": 0.7702143663031216},
-        {"ds_name": "TS_0007", "F1": 0.5485327313769751},
-        {"ds_name": "TS_0008", "F1": 0.46907216494845355},
-        {"ds_name": "TS_0009", "F1": 0.7394151025752946},
-        {"ds_name": "TS_0010", "F1": 0.7567409998542487},
-    ],
-}
+# Sample data as string (replace with actual data reading mechanism)
 
-# Extracting dataset names and F1 scores for all runs
-dataset_names = [item["ds_name"] for item in all_runs["Run 1"]]
-f1_scores_per_run = {run: [item["F1"] for item in all_runs[run]] for run in all_runs}
+DS_ID = "TS_0001"
+NR_SLICES = 64
 
-# Creating the plot with 3 bars per dataset
-bar_width = 0.1
-index = np.arange(len(dataset_names))
+with open(f"log_s{NR_SLICES}.csv", "r") as file:
+    csv_data = file.read()
 
+# Convert to DataFrame, filtering relevant columns and parsing iou/dice values
+df = pd.DataFrame(
+    [x.split(",") for x in csv_data.splitlines()],
+    columns=["timestamp", "size", "series", "s32", "position", "run", "iou", "dice"],
+)
+
+# Extract numeric values from iou and dice columns
+df["iou"] = df["iou"].str.split("=").str[1].astype(float)
+df["dice"] = df["dice"].str.split("=").str[1].astype(float)
+
+# Calculate mean and standard deviation for each position
+stats = (
+    df.groupby("position")
+    .agg({"iou": ["mean", "std"], "dice": ["mean", "std"]})
+    .reset_index()
+)
+
+# Flatten column names
+stats.columns = ["position", "iou_mean", "iou_std", "dice_mean", "dice_std"]
+
+# Create the plot
 plt.figure(figsize=(12, 8))
 
-# Plotting the bars for each run
-colors = ["red", "green", "orange", "darkviolet", "blue"]
-for i, (run, f1_scores) in enumerate(f1_scores_per_run.items()):
-    plt.bar(index + i * bar_width, f1_scores, bar_width, label=run, color=colors[i])
+# Plot error bars for IOU
+plt.errorbar(
+    range(len(stats)),
+    stats["iou_mean"],
+    yerr=stats["iou_std"],
+    fmt="o",
+    label="IOU",
+    capsize=5,
+    capthick=1.5,
+    color="blue",
+    ecolor="lightblue",
+    markersize=8,
+)
 
-# Calculating and plotting the average F1 score for each run
-for i, (run, f1_scores) in enumerate(f1_scores_per_run.items()):
-    avg_f1 = np.mean(f1_scores)
-    plt.axhline(
-        y=avg_f1, color=colors[i], linestyle="--", label=f"{run} Average: {avg_f1:.2f}"
-    )
+# Plot error bars for Dice
+plt.errorbar(
+    range(len(stats)),
+    stats["dice_mean"],
+    yerr=stats["dice_std"],
+    fmt="o",
+    label="Dice",
+    capsize=5,
+    capthick=1.5,
+    color="red",
+    ecolor="lightcoral",
+    markersize=8,
+)
 
-# Adding labels and title
-plt.xlabel("Dataset Names")
-plt.ylabel("F1 Scores")
-plt.title("F1 Scores for 5 Runs with Averages (Holdout Tomo)")
-plt.xticks(index + bar_width, dataset_names, rotation=45)
+# Customize the plot
+plt.xlabel("Position", fontsize=12)
+plt.ylabel("Score", fontsize=12)
+plt.title(
+    f"Mean IOU and Dice Scores with Standard Deviation ({DS_ID}, s{NR_SLICES})",
+    fontsize=14,
+)
+plt.grid(True, linestyle="--", alpha=0.7)
+plt.xticks(range(len(stats)), stats["position"], rotation=45)
 
-# Adding legend
-plt.legend()
+# Add legend
+plt.legend(fontsize=10)
 
-# Display the plot
+# Adjust layout to prevent label cutoff
 plt.tight_layout()
+
+# Show the plot
 plt.show()
 
+# Print numerical results
+print("\nNumerical Results:")
+print(stats.to_string(index=False, float_format=lambda x: "{:.4f}".format(x)))
+
 # %%
+# Group by position and get the index of max dice score for each group
+best_idx = df.groupby("position")["dice"].idxmax()
+
+# Create new dataframe with only the best runs
+best_runs = df.loc[best_idx]

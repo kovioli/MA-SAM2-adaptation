@@ -1,0 +1,10 @@
+24102024_21:08:31,tiny,TS_0001,s128,p0,r0,best_iou=0.2887,best_dice=0.4471
+24102024_21:14:32,tiny,TS_0001,s128,p0,r1,best_iou=0.2747,best_dice=0.4304
+24102024_21:20:21,tiny,TS_0001,s128,p0,r2,best_iou=0.3108,best_dice=0.4732
+24102024_21:29:25,tiny,TS_0001,s128,p0,r3,best_iou=0.3010,best_dice=0.4617
+24102024_21:39:36,tiny,TS_0001,s128,p0,r4,best_iou=0.3029,best_dice=0.4641
+24102024_22:07:02,tiny,TS_0001,s128,p0_4,r0,best_iou=0.3062,best_dice=0.4677
+24102024_22:15:43,tiny,TS_0001,s128,p0_4,r1,best_iou=0.3073,best_dice=0.4692
+24102024_22:23:16,tiny,TS_0001,s128,p0_4,r2,best_iou=0.3017,best_dice=0.4628
+24102024_22:29:20,tiny,TS_0001,s128,p0_4,r3,best_iou=0.3122,best_dice=0.4746
+24102024_22:36:53,tiny,TS_0001,s128,p0_4,r4,best_iou=0.2943,best_dice=0.4536
