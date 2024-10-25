@@ -3,35 +3,35 @@ import os
 import mrcfile
 import matplotlib.pyplot as plt
 
-pred_timestamp = "19102024_07:00"
+pred_timestamp = "24102024_21:20:21"
 DS_NAME = "TS_0002"
 PRED_PATH = os.path.join(
     "/media",
     "hdd1",
     "oliver",
-    "SAM2_EMPIAR_FINETUNE",
+    "SAM2_EMPIAR_DCR",
     "PREDICT",
     f"{pred_timestamp}",
     f"{DS_NAME}.mrc",
 )
 
-PRED_PATH = os.path.join(
-    "/media",
-    "hdd1",
-    "oliver",
-    "DeePiCt",
-    "PREDICT",
-    "predictions",
-    "test_holdout_1_best",
-    "TS_0002",
-    "ribo",
-    "probability_map.mrc",
-)
 
 with mrcfile.open(PRED_PATH) as mrc:
     pred = mrc.data
     print(f"PRED SHAPE: {pred.shape}")
 
+# PRED_PATH = os.path.join(
+#     "/media",
+#     "hdd1",
+#     "oliver",
+#     "DeePiCt",
+#     "PREDICT",
+#     "predictions",
+#     "test_holdout_1_best",
+#     "TS_0002",
+#     "ribo",
+#     "probability_map.mrc",
+# )
 # %%
 
 

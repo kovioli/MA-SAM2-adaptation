@@ -6,7 +6,7 @@ import numpy as np
 # Sample data as string (replace with actual data reading mechanism)
 
 DS_ID = "TS_0001"
-NR_SLICES = 64
+NR_SLICES = 128
 
 with open(f"log_s{NR_SLICES}.csv", "r") as file:
     csv_data = file.read()
@@ -91,3 +91,5 @@ best_idx = df.groupby("position")["dice"].idxmax()
 
 # Create new dataframe with only the best runs
 best_runs = df.loc[best_idx]
+
+# %%
