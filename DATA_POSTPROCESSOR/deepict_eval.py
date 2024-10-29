@@ -9,7 +9,7 @@ from DATA_POSTPROCESSOR.particle_picking_eval import eval_picking
 
 TRAIN_DS_ID = "0001"
 VAL_DS_ID = "0010"
-MODEL_NAME = "TS_0001_s128_p0"
+MODEL_NAME = "TS_0001_s128_p0_4"
 model_name = f"{MODEL_NAME}_best"
 
 deepict_pred_folder = os.path.join(
@@ -87,8 +87,9 @@ with open(
     os.path.join(
         "/oliver",
         "SAM2",
-        "dc_eval" "DeePiCt",
-        f"{model_name}.json",
+        "dc_eval",
+        "DeePiCt",
+        f"{MODEL_NAME}.json",
     ),
     "w",
 ) as f:

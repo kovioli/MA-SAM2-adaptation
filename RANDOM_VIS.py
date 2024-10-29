@@ -99,15 +99,13 @@ if __name__ == "__main__":
         ("TS_0001_s32_p5_25102024_00:51:19.json", 5),
     ]
     json_file_names = [
-        ("TS_0001_s8_p8_28102024_21:56:46.json", 8),
-        ("TS_0001_s8_p12_28102024_22:05:18.json", 12),
-        ("TS_0001_s8_p16_28102024_22:27:18.json", 16),
-        ("TS_0001_s8_p20_28102024_22:35:32.json", 20),
+        ("TS_0001_s128_p0.json", 0),
+        ("TS_0001_s128_p0_4.json", 0.4),
     ]
 
     json_files = []
     for file_name in json_file_names:
-        with open(os.path.join("dc_eval", file_name[0]), "r") as file:
+        with open(os.path.join("dc_eval", "DeePiCt", file_name[0]), "r") as file:
             data = json.load(file)
             json_files.append((file_name, data, file_name[1]))
 
