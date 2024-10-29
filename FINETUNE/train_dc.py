@@ -241,7 +241,7 @@ class TrainingPipeline:
 
 
 def main():
-    p = 0
+    p = 8
     while True:
         print("RUNNING FOR P:", p)
         for r in range(5):  # 5 runs
@@ -250,7 +250,7 @@ def main():
             pipeline = TrainingPipeline(timestamp)
             best_iou, best_dice = pipeline.train(p)
             pipeline.log_run(p, r, best_iou, best_dice)
-        p += 1
+        p += 4
 
 
 if __name__ == "__main__":

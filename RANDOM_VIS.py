@@ -1,95 +1,121 @@
 # %%
-import pandas as pd
+import json
 import matplotlib.pyplot as plt
+import re
+from pathlib import Path
 import numpy as np
 
-# Sample data as string (replace with actual data reading mechanism)
 
-DS_ID = "TS_0001"
-NR_SLICES = 128
+def extract_p_number(filename):
+    """Extract p number from filename like TS_0001_s64_p1_24102024_23:43:23.json or TS_0001_s64_p0_4_24102024_23:43:23.json"""
+    match = re.search(r"_p(\d+(?:_\d+)?)_", filename)
+    if match:
+        p_value = match.group(1).replace("_", ".")
+        return f"p{p_value}"
+    return "unknown"
 
-with open(f"log_s{NR_SLICES}.csv", "r") as file:
-    csv_data = file.read()
 
-# Convert to DataFrame, filtering relevant columns and parsing iou/dice values
-df = pd.DataFrame(
-    [x.split(",") for x in csv_data.splitlines()],
-    columns=["timestamp", "size", "series", "s32", "position", "run", "iou", "dice"],
-)
+def plot_f1_scores(json_files):
+    """
+    Plot F1 scores from multiple JSON files
+    Args:
+        json_files: List of tuples (filename, file_content)
+    """
+    plt.figure(figsize=(12, 6))
 
-# Extract numeric values from iou and dice columns
-df["iou"] = df["iou"].str.split("=").str[1].astype(float)
-df["dice"] = df["dice"].str.split("=").str[1].astype(float)
+    # Set style
+    plt.style.use("default")
+    markers = [
+        "o",
+        "s",
+        "^",
+        "D",
+        "v",
+        "<",
+        ">",
+        "p",
+        "*",
+    ]  # Different markers for different files
 
-# Calculate mean and standard deviation for each position
-stats = (
-    df.groupby("position")
-    .agg({"iou": ["mean", "std"], "dice": ["mean", "std"]})
-    .reset_index()
-)
+    # Keep track of min and max F1 scores
+    min_f1 = float("inf")
+    max_f1 = float("-inf")
 
-# Flatten column names
-stats.columns = ["position", "iou_mean", "iou_std", "dice_mean", "dice_std"]
+    # Create plot
+    for (filename, data, l), marker in zip(json_files, markers):
+        # Extract x and y values
+        ds_names = [item["ds_name"] for item in data]
+        f1_scores = [item["F1"] for item in data]
 
-# Create the plot
-plt.figure(figsize=(12, 8))
+        # Update min and max F1
+        min_f1 = min(min_f1, min(f1_scores))
+        max_f1 = max(max_f1, max(f1_scores))
 
-# Plot error bars for IOU
-plt.errorbar(
-    range(len(stats)),
-    stats["iou_mean"],
-    yerr=stats["iou_std"],
-    fmt="o",
-    label="IOU",
-    capsize=5,
-    capthick=1.5,
-    color="blue",
-    ecolor="lightblue",
-    markersize=8,
-)
+        # Get label from filename
+        # label = extract_p_number(filename)
+        label = l
 
-# Plot error bars for Dice
-plt.errorbar(
-    range(len(stats)),
-    stats["dice_mean"],
-    yerr=stats["dice_std"],
-    fmt="o",
-    label="Dice",
-    capsize=5,
-    capthick=1.5,
-    color="red",
-    ecolor="lightcoral",
-    markersize=8,
-)
+        # Plot lines connecting points
+        plt.plot(ds_names, f1_scores, "-", alpha=0.6, label=None)
 
-# Customize the plot
-plt.xlabel("Position", fontsize=12)
-plt.ylabel("Score", fontsize=12)
-plt.title(
-    f"Mean IOU and Dice Scores with Standard Deviation ({DS_ID}, s{NR_SLICES})",
-    fontsize=14,
-)
-plt.grid(True, linestyle="--", alpha=0.7)
-plt.xticks(range(len(stats)), stats["position"], rotation=45)
+        # Plot scatter points
+        plt.scatter(ds_names, f1_scores, label=label, marker=marker, s=100, alpha=1)
 
-# Add legend
-plt.legend(fontsize=10)
+    # Customize plot
+    plt.xlabel("Evaluation dataset", fontsize=12)
+    plt.ylabel("F1 Score (picking)", fontsize=12)
+    plt.title("F1 Scores (Slice number 8)", fontsize=14, pad=20)
+    plt.grid(True, linestyle="--", alpha=0.7)
+    plt.legend(title="Positions", loc="lower left")
 
-# Adjust layout to prevent label cutoff
-plt.tight_layout()
+    # Rotate x-axis labels for better readability
+    plt.xticks(rotation=45, ha="right")
 
-# Show the plot
-plt.show()
+    # Adjust layout to prevent label cutoff
+    plt.tight_layout()
 
-# Print numerical results
-print("\nNumerical Results:")
-print(stats.to_string(index=False, float_format=lambda x: "{:.4f}".format(x)))
+    # Set y-axis limits with some padding
+    plt.ylim(min_f1 - 0.05, max_f1 + 0.05)
 
-# %%
-# Group by position and get the index of max dice score for each group
-best_idx = df.groupby("position")["dice"].idxmax()
+    return plt
 
-# Create new dataframe with only the best runs
-best_runs = df.loc[best_idx]
+
+# Example usage:
+if __name__ == "__main__":
+    import os
+
+    # Sample data structure - replace with actual file reading
+    # json_file_names = [
+    #     "TS_0001_s64_p0_24102024_23:24:34.json",
+    #     "TS_0001_s64_p1_24102024_23:43:23.json",
+    #     "TS_0001_s64_p2_24102024_23:53:13.json",
+    # ]
+    json_file_names = [
+        ("TS_0001_s32_p0_24102024_23:02:12.json", 0),
+        ("TS_0001_s32_p1_24102024_23:18:50.json", 1),
+        ("TS_0001_s32_p2_24102024_23:46:51.json", 2),
+        ("TS_0001_s32_p3_25102024_00:09:23.json", 3),
+        ("TS_0001_s32_p4_25102024_00:33:05.json", 4),
+        ("TS_0001_s32_p5_25102024_00:51:19.json", 5),
+    ]
+    json_file_names = [
+        ("TS_0001_s8_p8_28102024_21:56:46.json", 8),
+        ("TS_0001_s8_p12_28102024_22:05:18.json", 12),
+        ("TS_0001_s8_p16_28102024_22:27:18.json", 16),
+        ("TS_0001_s8_p20_28102024_22:35:32.json", 20),
+    ]
+
+    json_files = []
+    for file_name in json_file_names:
+        with open(os.path.join("dc_eval", file_name[0]), "r") as file:
+            data = json.load(file)
+            json_files.append((file_name, data, file_name[1]))
+
+    # Create the plot
+    plt = plot_f1_scores(json_files)
+
+    # Show or save the plot
+    # plt.savefig("f1_scores_comparison.png", dpi=300, bbox_inches="tight")
+    plt.show()
 
 # %%

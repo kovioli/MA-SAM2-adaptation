@@ -1,7 +1,7 @@
 import torch
 
 # technical
-DEVICE_NUM = 2
+DEVICE_NUM = 3
 DEVICE = torch.device(f"cuda:{DEVICE_NUM}" if torch.cuda.is_available() else "cpu")
 
 # hyperparameters
@@ -18,7 +18,7 @@ VAL_DS_CONF = {
 }
 VAL_ID = "TS_0010"
 TRAIN_RATIO = 0.8
-NR_SLICES = 32
+NR_SLICES = 8
 PROMPT_GRID = False
 
 # logging

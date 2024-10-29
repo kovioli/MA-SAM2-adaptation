@@ -8,7 +8,9 @@ from statistics import mean
 from DATA_POSTPROCESSOR.particle_picking_eval import eval_picking
 
 TRAIN_DS_ID = "0001"
-model_name = "test_holdout_5_best"
+VAL_DS_ID = "0010"
+MODEL_NAME = "TS_0001_s128_p0"
+model_name = f"{MODEL_NAME}_best"
 
 deepict_pred_folder = os.path.join(
     "/media", "hdd1", "oliver", "DeePiCt", "PREDICT", "predictions", model_name
@@ -44,7 +46,7 @@ F1_results = []
 
 for tomo_id in TOMO_IDs:
     # Skip the training dataset
-    if TRAIN_DS_ID == tomo_id:
+    if tomo_id in [TRAIN_DS_ID, VAL_DS_ID]:
         continue
 
     # Find the relevant info
@@ -85,9 +87,8 @@ with open(
     os.path.join(
         "/oliver",
         "SAM2",
-        "sample_complexity_eval",
-        "DeePiCt",
-        f"{model_name}_{TRAIN_DS_ID}.json",
+        "dc_eval" "DeePiCt",
+        f"{model_name}.json",
     ),
     "w",
 ) as f:

@@ -18,7 +18,7 @@ from torch.cuda.amp import autocast
 from matplotlib import pyplot as plt
 
 DS_ID = "TS_0001"
-NR_SLICES = 32
+NR_SLICES = 8
 
 with open(f"/oliver/SAM2/log_s{NR_SLICES}.csv", "r") as file:
     csv_data = file.read()
