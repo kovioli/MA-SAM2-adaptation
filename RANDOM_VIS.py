@@ -15,7 +15,7 @@ def extract_p_number(filename):
     return "unknown"
 
 
-def plot_f1_scores(json_files):
+def plot_f1_scores(json_files, slice_nr):
     """
     Plot F1 scores from multiple JSON files
     Args:
@@ -64,7 +64,7 @@ def plot_f1_scores(json_files):
     # Customize plot
     plt.xlabel("Evaluation dataset", fontsize=12)
     plt.ylabel("F1 Score (picking)", fontsize=12)
-    plt.title("F1 Scores (Slice number 8)", fontsize=14, pad=20)
+    plt.title(f"F1 Scores (Slice number {slice_nr})", fontsize=14, pad=20)
     plt.grid(True, linestyle="--", alpha=0.7)
     plt.legend(title="Positions", loc="lower left")
 
@@ -98,9 +98,18 @@ if __name__ == "__main__":
         ("TS_0001_s32_p4_25102024_00:33:05.json", 4),
         ("TS_0001_s32_p5_25102024_00:51:19.json", 5),
     ]
+    SLICE_NR = 32
+    # json_file_names = [
+    #     ("TS_0001_s128_p0_r1.json", 0),
+    #     ("TS_0001_s128_p0_4_r1.json", 0.4),
+    # ]
     json_file_names = [
-        ("TS_0001_s128_p0.json", 0),
-        ("TS_0001_s128_p0_4.json", 0.4),
+        ("TS_0001_s32_p0_r1.json", 0),
+        ("TS_0001_s32_p1_r2.json", 1),
+        ("TS_0001_s32_p2_r4.json", 2),
+        ("TS_0001_s32_p3_r2.json", 3),
+        ("TS_0001_s32_p4_r4.json", 4),
+        ("TS_0001_s32_p5_r1.json", 5),
     ]
 
     json_files = []
@@ -110,7 +119,7 @@ if __name__ == "__main__":
             json_files.append((file_name, data, file_name[1]))
 
     # Create the plot
-    plt = plot_f1_scores(json_files)
+    plt = plot_f1_scores(json_files, SLICE_NR)
 
     # Show or save the plot
     # plt.savefig("f1_scores_comparison.png", dpi=300, bbox_inches="tight")
