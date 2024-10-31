@@ -7,7 +7,7 @@ from torch.utils.data import Dataset, Subset, ConcatDataset
 import torch
 import numpy as np
 from torchvision.transforms import ToTensor
-from FINETUNE.config import NOISE_VAR, PARTICLE_CLASS
+from FINETUNE.config import NOISE_VAR
 import mrcfile
 import torchvision.transforms.functional as TF
 import struct
@@ -81,13 +81,14 @@ class MRCDataset(Dataset):
 
         # Paths to the mrc files
         data_dir = os.path.join(main_folder, DS_ID)
-        # input_file = os.path.join(data_dir, 'grandmodel.mrc')
-        input_file = os.path.join(data_dir, "reconstruction.mrc")
+        input_file = os.path.join(data_dir, "grandmodel.mrc")
+        # input_file = os.path.join(data_dir, "reconstruction.mrc")
         label_file = os.path.join(data_dir, "class_mask.mrc")
 
         # Read the mrc files
         uncropped_data = read_mrc(input_file).copy().astype(np.float32)
-        self.input_volume = uncropped_data[156:356]  # shape (200, H, W)
+        # self.input_volume = uncropped_data[156:356]  # TODO: add for reconstruction!
+        self.input_volume = uncropped_data.copy()
 
         self.label_volume = read_mrc(label_file).copy()
 
@@ -107,20 +108,23 @@ class MRCDataset(Dataset):
 
     def __getitem__(self, idx):
         # Get the slice at idx
-        input_slice = self.input_volume[idx]  # shape (H, W)
-        label_slice = self.label_volume[idx]  # shape (H, W)
+        prev_idx = max(0, idx - 1)
+        next_idx = min(self.depth - 1, idx + 1)
+        label_slice = self.label_volume[idx].copy()  # shape (H, W)
 
-        # Convert to torch tensors
-        input_slice_tensor = torch.from_numpy(input_slice).unsqueeze(
-            0
-        )  # shape (1, H, W)
-        label_slice_tensor = torch.from_numpy(label_slice).unsqueeze(
-            0
-        )  # shape (1, H, W)
+        input_stack = np.stack(
+            [
+                self.input_volume[prev_idx],
+                self.input_volume[idx],
+                self.input_volume[next_idx],
+            ]
+        )
+        input_tensor = torch.from_numpy(input_stack)
+        label_tensor = torch.from_numpy(label_slice).unsqueeze(0)
 
         # Resize input to (1, 1024, 1024)
-        input_slice_tensor = TF.resize(
-            input_slice_tensor,
+        input_tensor = TF.resize(
+            input_tensor,
             [1024, 1024],
             interpolation=TF.InterpolationMode.BILINEAR,
         )
@@ -128,37 +132,25 @@ class MRCDataset(Dataset):
         # input_slice_tensor = (input_slice_tensor - input_slice_tensor.min()) / (input_slice_tensor.max() - input_slice_tensor.min())
 
         # Resize label to (1, 256, 256)
-        label_slice_tensor = TF.resize(
-            label_slice_tensor, [256, 256], interpolation=TF.InterpolationMode.NEAREST
+        label_tensor = TF.resize(
+            label_tensor, [256, 256], interpolation=TF.InterpolationMode.NEAREST
         )
 
-        # Repeat input_slice_tensor to 3 channels
-        input_slice_tensor = input_slice_tensor.repeat(3, 1, 1)
-
-        # Convert to float32 for precision
-        input_slice_tensor = input_slice_tensor.float()
-
-        # Add Gaussian noise scaled to the data's standard deviation
-        # noise_std = NOISE_VAR ** 0.5
-        noise = torch.randn_like(input_slice_tensor) * NOISE_VAR**0.5
-        input_slice_tensor = input_slice_tensor + noise
-
-        # Clip the values to [0, 1] to maintain valid image range
-        # input_slice_tensor = torch.clamp(input_slice_tensor, 0.0, 1.0)
-
-        # Move to device
-        input_slice_tensor = input_slice_tensor.to(self.device)
-        label_slice_tensor = label_slice_tensor.float().to(self.device)
-
-        return input_slice_tensor, label_slice_tensor
+        input_tensor = input_tensor.float().to(self.device)
+        label_tensor = label_tensor.float().to(self.device)
+        return input_tensor, label_tensor
 
 
 # ds = MRCDataset(
-#     main_folder='/media/hdd1/oliver/SHREC',
-#     DS_ID='model_1',
-#     device='cpu'
+#     main_folder="/media/hdd1/oliver/shrec2020_full_dataset",
+#     DS_ID="model_1",
+#     device="cpu",
+#     particle_id=1,
 # )
 # import matplotlib.pyplot as plt
-# plt.imshow(ds[140][0][1].cpu())
-# plt.axis('off')
+
+# plt.imshow(ds[140][1].squeeze())
+# plt.axis("off")
+# %%
+
 # %%

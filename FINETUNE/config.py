@@ -1,14 +1,14 @@
 import torch
 
 # settings
-DEVICE_NUM = 0
+DEVICE_NUM = 3
 DEVICE = torch.device(f"cuda:{DEVICE_NUM}" if torch.cuda.is_available() else "cpu")
 
 # hyperparams
 EPOCH = 80
 LR = 1e-5
 BS = 1
-MODEL_TYPE = "tiny"  # 'tiny', 'small', 'base', 'large'
+MODEL_TYPE = "large"  # 'tiny', 'small', 'base', 'large'
 MODEL_DICT = {
     "tiny": {
         "config": "sam2_hiera_t.yaml",
@@ -51,8 +51,6 @@ TRAIN_IDs = [
 VAL_IDs = ["model_8"]
 NOISE_VAR = 0.0
 PROMPT_GRID = False
-
-PARTICLE_CLASS = 13
 
 particle_mapping = {
     "background": 0,

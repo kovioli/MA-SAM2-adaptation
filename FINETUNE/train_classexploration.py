@@ -5,7 +5,7 @@ import torch
 from monai.losses import GeneralizedDiceLoss
 from shrec_dataset import MRCDataset, create_multi_ds
 from torch.utils.tensorboard import SummaryWriter
-from model import SAM2_finetune
+from _3D_HEAD.model_3D import HeadFinetuneModel
 import datetime
 import matplotlib.pyplot as plt
 import numpy as np
@@ -45,7 +45,7 @@ def evaluate(model, val_dataloader):
             label = label.to(device=DEVICE)
 
             with autocast():
-                pred = model(image)
+                pred, _ = model(image)
                 loss = lossfunc(pred, label) * 100
 
             val_loss.append(loss.item())
@@ -80,7 +80,7 @@ def evaluate_stepwise(model, val_dataloader, step):
             label = label.to(device=DEVICE)
 
             with autocast():
-                pred = model(image)
+                pred, _ = model(image)
                 loss = lossfunc(pred, label) * 100
 
             val_loss.append(loss.item())
@@ -109,23 +109,14 @@ def train(model, train_dataloader, test_dataloader, epoch, step):
         optimizer.zero_grad()
 
         with autocast():
-            pred = model(image)
+            pred, _ = model(image)
             loss = lossfunc(pred, label) * 100
 
         train_loss.append(loss.item())
 
-        scaler.scale(loss).backward()
+        scaler.scale(loss).backward(retain_graph=True)
         scaler.step(optimizer)
         scaler.update()
-        # loss.requires_grad_(True)
-        # loss.backward(retain_graph=True)
-        # # loss.backward()
-        # optimizer.step()
-        # pdb.set_trace()
-        # for name, param in model.unet.named_parameters():
-        #     if param.requires_grad:
-        #         print(f"Gradient for {name}: {param.grad.mean().item()}")
-        # print("\n\n")
 
         iou, dice = eval_seg(pred, label, THRESHOLD)
         iou_list.append(iou)
@@ -159,7 +150,9 @@ def train(model, train_dataloader, test_dataloader, epoch, step):
 
 
 if __name__ == "__main__":
-    multi_training_log_path = f"shrec2020_finetune+_class_exploration_reconstruction_{len(TRAIN_IDs)}ds_{MODEL_TYPE}.log"
+    multi_training_log_path = (
+        f"shrec2020_headfinetune_ce_grandmodel_{len(TRAIN_IDs)}ds_{MODEL_TYPE}.log"
+    )
 
     for particle_name, p_id in particle_mapping.items():
         if particle_name == "background":
@@ -172,12 +165,7 @@ if __name__ == "__main__":
         epochs_wo_improvement = 0
         step = 0
 
-        model = SAM2_finetune(
-            model_cfg=MODEL_DICT[MODEL_TYPE]["config"],
-            ckpt_path=MODEL_DICT[MODEL_TYPE]["ckpt"],
-            device=DEVICE,
-            use_point_grid=PROMPT_GRID,
-        )
+        model = HeadFinetuneModel(model_type=MODEL_TYPE, device=DEVICE)
 
         optimizer = torch.optim.Adam(model.parameters(), lr=LR)
         scaler = GradScaler()
@@ -194,7 +182,7 @@ if __name__ == "__main__":
             "/media",
             "hdd1",
             "oliver",
-            "SAM2_SHREC_FINETUNE",
+            "SAM2_SHREC_HEADFINETUNE",
             multi_training_log_path.split(".")[0],
             "checkpoints",
             timestamp_str,
@@ -205,7 +193,7 @@ if __name__ == "__main__":
                 "/media",
                 "hdd1",
                 "oliver",
-                "SAM2_SHREC_FINETUNE",
+                "SAM2_SHREC_HEADFINETUNE",
                 multi_training_log_path.split(".")[0],
                 "logs",
                 timestamp_str,
