@@ -104,12 +104,10 @@ if __name__ == "__main__":
     #     ("TS_0001_s128_p0_4_r1.json", 0.4),
     # ]
     json_file_names = [
-        ("TS_0001_s32_p0_r1.json", 0),
-        ("TS_0001_s32_p1_r2.json", 1),
-        ("TS_0001_s32_p2_r4.json", 2),
-        ("TS_0001_s32_p3_r2.json", 3),
-        ("TS_0001_s32_p4_r4.json", 4),
-        ("TS_0001_s32_p5_r1.json", 5),
+        ("TS_0001_s16_p10_r1.json", 10),
+        ("TS_0001_s16_p4_r4.json", 4),
+        ("TS_0001_s16_p6_r2.json", 6),
+        ("TS_0001_s16_p8_r3.json", 8),
     ]
 
     json_files = []

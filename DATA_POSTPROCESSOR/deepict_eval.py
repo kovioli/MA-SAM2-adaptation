@@ -9,15 +9,13 @@ from DATA_POSTPROCESSOR.particle_picking_eval import eval_picking
 
 TRAIN_DS_ID = "0001"
 VAL_DS_ID = "0010"
-MODEL_NAME = "TS_0001_s32_p5_r1"
+MODEL_NAME = "TS_0001_s8_p8_r3"
 model_name = f"{MODEL_NAME}_best"
 
-# TS_0001_s32_p0_r1
-# TS_0001_s32_p1_r2
-# TS_0001_s32_p2_r4
-# TS_0001_s32_p3_r2
-# TS_0001_s32_p4_r4
-# TS_0001_s32_p5_r1
+# TS_0001_s16_p10_r1_best
+# TS_0001_s16_p4_r4_best
+# TS_0001_s16_p6_r2_best
+# TS_0001_s16_p8_r3_best
 deepict_pred_folder = os.path.join(
     "/media", "hdd1", "oliver", "DeePiCt", "PREDICT", "predictions", model_name
 )

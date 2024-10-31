@@ -15,8 +15,28 @@ PRED_PATH = os.path.join(
     f"{DS_NAME}.mrc",
 )
 
+MODEL_NAME = "TS_0001_s8_p8_r3"
+model_name = f"{MODEL_NAME}_best"
 
-with mrcfile.open(PRED_PATH) as mrc:
+# TS_0001_s16_p10_r1_best
+# TS_0001_s16_p4_r4_best
+# TS_0001_s16_p6_r2_best
+# TS_0001_s16_p8_r3_best
+deepict_pred_folder = os.path.join(
+    "/media",
+    "hdd1",
+    "oliver",
+    "DeePiCt",
+    "PREDICT",
+    "predictions",
+    model_name,
+    "TS_0004",
+    "ribo",
+    "probability_map.mrc",
+)
+
+
+with mrcfile.open(deepict_pred_folder) as mrc:
     pred = mrc.data
     print(f"PRED SHAPE: {pred.shape}")
 
