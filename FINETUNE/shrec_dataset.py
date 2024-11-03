@@ -81,14 +81,16 @@ class MRCDataset(Dataset):
 
         # Paths to the mrc files
         data_dir = os.path.join(main_folder, DS_ID)
-        input_file = os.path.join(data_dir, "grandmodel.mrc")
-        # input_file = os.path.join(data_dir, "reconstruction.mrc")
+        # input_file = os.path.join(data_dir, "grandmodel.mrc")
+        input_file = os.path.join(data_dir, "reconstruction.mrc")
         label_file = os.path.join(data_dir, "class_mask.mrc")
 
         # Read the mrc files
         uncropped_data = read_mrc(input_file).copy().astype(np.float32)
-        # self.input_volume = uncropped_data[156:356]  # TODO: add for reconstruction!
-        self.input_volume = uncropped_data.copy()
+        self.input_volume = uncropped_data[
+            156:356
+        ].copy()  # TODO: use for reconstruction!
+        # self.input_volume = uncropped_data.copy() # TODO: use for grandmodel
 
         self.label_volume = read_mrc(label_file).copy()
 

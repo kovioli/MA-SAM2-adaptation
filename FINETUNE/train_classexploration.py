@@ -151,7 +151,7 @@ def train(model, train_dataloader, test_dataloader, epoch, step):
 
 if __name__ == "__main__":
     multi_training_log_path = (
-        f"shrec2020_headfinetune_ce_grandmodel_{len(TRAIN_IDs)}ds_{MODEL_TYPE}.log"
+        f"shrec2020_headfinetune_ce_reconstruction_{len(TRAIN_IDs)}ds_{MODEL_TYPE}.log"
     )
 
     for particle_name, p_id in particle_mapping.items():
@@ -170,7 +170,7 @@ if __name__ == "__main__":
         optimizer = torch.optim.Adam(model.parameters(), lr=LR)
         scaler = GradScaler()
 
-        timestamp_str = datetime.datetime.now().strftime("%d%m%Y_%H:%M")
+        timestamp_str = datetime.datetime.now().strftime("%d%m%Y_%H:%M:%S")
         print(f"Training particle '{particle_name}' with id {p_id} at {timestamp_str}")
 
         with open(multi_training_log_path, "a") as f:
