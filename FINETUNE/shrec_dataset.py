@@ -71,7 +71,14 @@ def create_multi_ds(
 
 
 class MRCDataset(Dataset):
-    def __init__(self, main_folder, DS_ID, particle_id: int, device="cuda"):
+    def __init__(
+        self,
+        main_folder,
+        DS_ID,
+        particle_id: int,
+        device="cuda",
+        input_type="grandmodel",
+    ):
         """
         main_folder: str (e.g., '/media/hdd1/oliver/SHREC')
         DS_ID: str (e.g., 'model_0')
@@ -81,17 +88,17 @@ class MRCDataset(Dataset):
 
         # Paths to the mrc files
         data_dir = os.path.join(main_folder, DS_ID)
-        # input_file = os.path.join(data_dir, "grandmodel.mrc")
-        input_file = os.path.join(data_dir, "reconstruction.mrc")
+
+        if input_type == "grandmodel":
+            input_file = os.path.join(data_dir, "grandmodel.mrc")
+            uncropped_data = read_mrc(input_file).copy().astype(np.float32)
+            self.input_volume = uncropped_data.copy()
+        elif input_type == "reconstruction":
+            input_file = os.path.join(data_dir, "reconstruction.mrc")
+            uncropped_data = read_mrc(input_file).copy().astype(np.float32)
+            self.input_volume = uncropped_data[156:356].copy()
+
         label_file = os.path.join(data_dir, "class_mask.mrc")
-
-        # Read the mrc files
-        uncropped_data = read_mrc(input_file).copy().astype(np.float32)
-        self.input_volume = uncropped_data[
-            156:356
-        ].copy()  # TODO: use for reconstruction!
-        # self.input_volume = uncropped_data.copy() # TODO: use for grandmodel
-
         self.label_volume = read_mrc(label_file).copy()
 
         self.label_volume = (self.label_volume == particle_id).astype(np.uint8)

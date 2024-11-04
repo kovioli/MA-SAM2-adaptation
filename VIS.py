@@ -8,10 +8,10 @@ base_folder = os.path.join(
     "/media",
     "hdd1",
     "oliver",
-    "SAM2_SHREC_FINETUNE",
-    "shrec2020_finetune_class_exploration_reconstruction_denoised_g1_8ds_tiny",
+    "SAM2_SHREC_HEADFINETUNE",
+    "shrec2020_headfinetune_ce_grandmodel_8ds_large",
 )
-with open(os.path.join(base_folder, "class_exploration_results.json"), "r") as f:
+with open(os.path.join(base_folder, "class_exploration_seg_results.json"), "r") as f:
     data = json.load(f)
 
 # Extracting values
@@ -29,7 +29,7 @@ bars2 = ax.bar(x + width / 2, iou_values, width, label="IOU", color="orange")
 
 # Adding labels, title, and custom x-axis tick labels
 ax.set_ylabel("Scores")
-ax.set_title("Particle Exploration (8DS)")
+ax.set_title("Particle exploration (8DS - grandmodel)")
 ax.set_xticks(x)
 ax.set_xticklabels(names)
 ax.legend()

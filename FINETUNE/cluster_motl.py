@@ -133,26 +133,24 @@ def get_clusters_within_size_range(
         max_cluster_size = np.inf
     assert min_cluster_size <= max_cluster_size
 
-    # find clusters and label them. Each cluster is assigned a unique integer from 0 to num_clusters-1
-    # for example: [... 0   0   0   0   0   0   0   0   0 592 592 592 592 592   0   0   0   0 ...]
+    # find clusters and label them
     labeled_clusters, num = morph.label(
         dataset, background=0, return_num=True, connectivity=connectivity
     )
     labels_list, cluster_size = np.unique(labeled_clusters, return_counts=True)
-    # excluding the background cluster: (e.g. where labels_list is zero)
+
+    # Check if we have any non-background clusters
+    if len(labels_list) <= 1:  # Only background cluster exists
+        return labeled_clusters, [], []
+
+    # excluding the background cluster
     labels_list, cluster_size = labels_list[1:], cluster_size[1:]
-    maximum = np.max(cluster_size)
-    print("number of clusters before size filtering = ", len(labels_list))
-    # print("size range before size filtering: ", np.min(cluster_size), "to",
-    #       maximum)
-    labels_list_within_range = labels_list[
-        (cluster_size > min_cluster_size) & (cluster_size <= max_cluster_size)
-    ]
-    cluster_size_within_range = list(
-        cluster_size[
-            (cluster_size > min_cluster_size) & (cluster_size <= max_cluster_size)
-        ]
-    )
+
+    # Create mask for clusters within size range
+    size_mask = (cluster_size > min_cluster_size) & (cluster_size <= max_cluster_size)
+    labels_list_within_range = labels_list[size_mask]
+    cluster_size_within_range = list(cluster_size[size_mask])
+
     return labeled_clusters, labels_list_within_range, cluster_size_within_range
 
 
@@ -167,9 +165,15 @@ def get_cluster_centroids(
             connectivity=connectivity,
         )
     )
+
+    # If no clusters found, return empty results
+    if len(labels_list_within_range) == 0:
+        return np.zeros_like(dataset), [], []
+
     # Create binary mask of the labels within range
     clusters_map_in_range = np.zeros(labeled_clusters.shape)
     clusters_map_in_range[np.isin(labeled_clusters, labels_list_within_range)] = 1
+
     # Find out the centroids of the labels within range
     filtered_labeled_clusters = (labeled_clusters * clusters_map_in_range).astype(
         np.int32
@@ -177,6 +181,7 @@ def get_cluster_centroids(
     props = regionprops_table(
         filtered_labeled_clusters, properties=("label", "centroid")
     )
+
     centroids_list = [
         np.rint([x, y, z])
         for _, x, y, z in sorted(
@@ -219,24 +224,29 @@ def cluster_and_clean(
     clustering_connectivity: int,
     prediction_dir: str,
     prediction_file: str,
-    particle_id: str,  # the actual identifier, e.g. 1bxn
+    particle_id: str,
     output_file: str,
 ) -> str:
     # paths
     original_pred_path = os.path.join(prediction_dir, prediction_file)
-    clustered_prediction_path = original_pred_path.replace(".mrc", "_cluster.mrc")
 
-    # save cluster config
-    save_cluster_config_yaml(
-        save_dir=prediction_dir,
-        threshold=threshold,
-        min_cluster_size=min_cluster_size,
-        max_cluster_size=max_cluster_size,
-        clustering_connectivity=clustering_connectivity,
-    )
+    # Add debug prints
+    print(f"Processing particle {particle_id}")
+    print(f"Min cluster size: {min_cluster_size}")
+    print(f"Reading prediction from: {original_pred_path}")
+
+    # Check if file exists
+    if not os.path.exists(original_pred_path):
+        print(f"Warning: File not found - {original_pred_path}")
+        return
 
     # load ds
     original_prediction_ds = read_mrc(original_pred_path)
+    print(f"Loaded prediction shape: {original_prediction_ds.shape}")
+    print(
+        f"Prediction range: [{original_prediction_ds.min()}, {original_prediction_ds.max()}]"
+    )
+
     # get & save clustered ds
     clusters_labeled_by_size, centroids_list, cluster_size_list = get_cluster_centroids(
         dataset=original_prediction_ds,
@@ -244,16 +254,8 @@ def cluster_and_clean(
         max_cluster_size=max_cluster_size,
         connectivity=clustering_connectivity,
     )
-    # clustered_prediction = 1 * (clusters_labeled_by_size > 0)
-    # write_tomogram(output_path=clustered_prediction_path, tomo_data=clustered_prediction)
 
-    # create motl list
-    motl_name = f"motl_{str(len(centroids_list))}.txt"
-    motl_file_path = os.path.join(prediction_dir, motl_name)
-
-    # delete file path if it exists
-    if os.path.exists(motl_file_path):
-        os.remove(motl_file_path)
+    print(f"Found {len(centroids_list)} clusters")
 
     if len(centroids_list) > 0:
         motive_list_df = build_tom_motive_list(
@@ -265,7 +267,6 @@ def cluster_and_clean(
 
         with open(output_file, "a") as f:
             for _, row in motive_list_df.iterrows():
-                # Assuming your columns are named 'x', 'y', and 'z'
                 line = (
                     f"{particle_id} {int(row['x'])} {int(row['y'])} {int(row['z'])}\n"
                 )
@@ -367,22 +368,25 @@ particle_id_mapping = [
 
 # %%
 
-mol_weight_ratio = 0.5
+mol_weight_ratio = 0.55
 volume_ratio = 0.2
-ds_name = "denoised_g1_8ds_tiny"
-output_file = f"/oliver/SAM2/PARTICLE_COORDS_reconstruction_{ds_name}.txt"
+ds_name = "reconstruction_8ds_large"
+output_file = f"/oliver/SAM2/PARTICLE_COORDS/{ds_name}.txt"
+output_file = f"/oliver/SAM2/PARTICLE_COORDS/TEST.txt"
 if os.path.exists(output_file):
     os.remove(output_file)
 
 for p_map in particle_id_mapping:
     cluster_and_clean(
         threshold=0.5,
-        # min_cluster_size=int(volume_ratio * p_map["volume"]),
-        min_cluster_size=int(mol_weight_ratio * p_map["mol_weight"]),
+        min_cluster_size=int(volume_ratio * p_map["volume"]),
+        # min_cluster_size=int(mol_weight_ratio * p_map["mol_weight"]),
         max_cluster_size=None,
         clustering_connectivity=1,
-        prediction_dir=f"/media/hdd1/oliver/SAM2_SHREC_FINETUNE/shrec2020_finetune_class_exploration_reconstruction_{ds_name}/PREDICT/",
-        prediction_file=f"model_9_particle_{p_map['particle_id']}.mrc",
+        prediction_dir=f"/media/hdd1/oliver/DeePiCt/PREDICT/predictions/shrec_p{p_map['particle_id']:02d}_grandmodel_best/model_9_p{p_map['particle_id']}_grandmodel/ribo/",
+        prediction_file=f"probability_map.mrc",
+        # prediction_dir=f"/media/hdd1/oliver/SAM2_SHREC_HEADFINETUNE/shrec2020_headfinetune_ce_{ds_name}/PREDICT/",
+        # prediction_file=f"model_9_particle_{p_map['particle_id']}.mrc",
         particle_id=p_map["particle_name"],
         output_file=output_file,
     )
