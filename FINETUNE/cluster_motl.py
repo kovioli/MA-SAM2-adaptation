@@ -370,20 +370,20 @@ particle_id_mapping = [
 
 mol_weight_ratio = 0.55
 volume_ratio = 0.2
-ds_name = "reconstruction_8ds_large"
+ds_name = "deepict_reconstruction"
 output_file = f"/oliver/SAM2/PARTICLE_COORDS/{ds_name}.txt"
-output_file = f"/oliver/SAM2/PARTICLE_COORDS/TEST.txt"
+
 if os.path.exists(output_file):
     os.remove(output_file)
 
 for p_map in particle_id_mapping:
     cluster_and_clean(
         threshold=0.5,
-        min_cluster_size=int(volume_ratio * p_map["volume"]),
-        # min_cluster_size=int(mol_weight_ratio * p_map["mol_weight"]),
+        # min_cluster_size=int(volume_ratio * p_map["volume"]),
+        min_cluster_size=int(mol_weight_ratio * p_map["mol_weight"]),
         max_cluster_size=None,
         clustering_connectivity=1,
-        prediction_dir=f"/media/hdd1/oliver/DeePiCt/PREDICT/predictions/shrec_p{p_map['particle_id']:02d}_grandmodel_best/model_9_p{p_map['particle_id']}_grandmodel/ribo/",
+        prediction_dir=f"/media/hdd1/oliver/DeePiCt/PREDICT/predictions/shrec_p{p_map['particle_id']:02d}_reconstruction_best/model_9_p{p_map['particle_id']}_reconstruction/ribo/",
         prediction_file=f"probability_map.mrc",
         # prediction_dir=f"/media/hdd1/oliver/SAM2_SHREC_HEADFINETUNE/shrec2020_headfinetune_ce_{ds_name}/PREDICT/",
         # prediction_file=f"model_9_particle_{p_map['particle_id']}.mrc",

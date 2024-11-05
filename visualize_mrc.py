@@ -24,13 +24,35 @@ import numpy as np
 #     "model_9_particle_1.mrc",
 # )
 
+# prediction_dir=f"/media/hdd1/oliver/DeePiCt/PREDICT/predictions/shrec_p{p_map['particle_id']:02d}_reconstruction_best/model_9_p{p_map['particle_id']}_reconstruction/ribo/",
+
+# TOMOGRAM_PATH = os.path.join(
+#     "/media",
+#     "hdd1",
+#     "oliver",
+#     "DeePiCt",
+#     "PREDICT",
+#     "predictions",
+#     "shrec_p01_reconstruction_best",
+#     "model_9_p1_reconstruction",
+#     "ribo",
+#     "probability_map.mrc",
+# )
 TOMOGRAM_PATH = os.path.join(
     "/media",
     "hdd1",
     "oliver",
-    "topaz_test",
-    f"reconstruction.mrc",
+    "DeePiCt",
+    "PREDICT",
+    "predictions",
+    "shrec_p01_grandmodel_best",
+    "model_9_p1_grandmodel",
+    "ribo",
+    "probability_map.mrc",
 )
+# TOMOGRAM_PATH = os.path.join(
+#     "/media", "hdd1", "oliver", "DEEPICT_SHREC", "model_9", "class_mask_1.mrc"
+# )
 
 
 def read_mrc(file_path):

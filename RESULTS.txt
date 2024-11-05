@@ -6970,3 +6970,173 @@ Processing submission #0: /oliver/SAM2/PARTICLE_COORDS/deepict_grandmodel.txt
 
 
 
+Processing submission #0: /oliver/SAM2/PARTICLE_COORDS/deepict_reconstruction.txt
+
+	### Warning
+	Detected particles with Z<156 or Z>356, most likely the submission is in 0 to 199 Z coordinates
+	Adding +156 padding to all Z coordinates of predicted particles.
+
+	### Localization
+	Submission has 7448 predicted particles
+	Tomogram has 2782 particles
+	TP: 241 unique particles found
+	FP: 7144 predicted particles are false positive
+	FN: 2541 unique particles not found
+	There was 55 particles that had more than one prediction
+	There was 1092 predicted particles that were outside of tomo bounds
+	Average euclidean distance from predicted center to ground truth center: 7.750671348353854
+	Recall: 0.08663
+	Precision: 0.03236
+	Miss rate: 0.91337
+	F1 score: 0.04712
+
+	### Classification
+	Predict    0          3cf3       1s3x       1u6g       4cr2       1qvr       3h84       2cg9       3qm1       3gl1       3d2f       4d8q       1bxn       
+	Actual
+	0          0          0          0          0          0          0          0          0          0          0          0          0          0          
+	
+	3cf3       210        6          3          5          1          0          2          4          3          2          1          0          1          
+	
+	1s3x       229        0          2          0          1          0          0          1          0          0          0          0          0          
+	
+	1u6g       205        1          1          4          0          1          1          0          1          1          1          1          0          
+	
+	4cr2       183        4          20         8          0          0          0          6          1          7          1          1          0          
+	
+	1qvr       199        4          6          5          0          0          2          4          2          4          0          0          0          
+	
+	3h84       224        1          5          2          1          0          2          2          2          0          0          0          1          
+	
+	2cg9       219        1          1          4          0          0          0          1          0          1          0          1          0          
+	
+	3qm1       235        1          0          0          0          0          1          2          0          1          0          0          1          
+	
+	3gl1       219        1          4          3          1          0          0          1          0          0          0          0          0          
+	
+	3d2f       193        1          3          4          0          0          0          5          2          4          1          0          1          
+	
+	4d8q       207        1          10         12         0          0          1          3          2          1          1          0          2          
+	
+	1bxn       218        4          4          6          1          0          2          2          4          3          1          0          0          
+	
+
+	Overall Statistics : 
+	
+	ACC Macro                                                         0.84704
+	F1 Macro                                                          0.00936
+	FPR Macro                                                         0.07704
+	Kappa                                                             -0.00141
+	NPV Macro                                                         0.92297
+	Overall ACC                                                       0.00575
+	PPV Macro                                                         0.05616
+	SOA1(Landis & Koch)                                               Poor
+	TPR Macro                                                         None
+	Zero-one Loss                                                     2766
+	
+	Class Statistics :
+	
+	Classes                                                           0             3cf3          1s3x          1u6g          4cr2          1qvr          3h84          2cg9          3qm1          3gl1          3d2f          4d8q          1bxn          
+	ACC(Accuracy)                                                     0.08663       0.90978       0.89648       0.90582       0.91517       0.9184        0.91121       0.90762       0.90726       0.90906       0.92164       0.91265       0.90978       
+	AUC(Area under the ROC curve)                                     None          0.50887       0.49311       0.49966       0.49902       0.4998        0.5024        0.49632       0.49665       0.4953        0.50136       0.49941       0.49882       
+	AUCI(AUC value interpretation)                                    None          Poor          Poor          Poor          Poor          Poor          Poor          Poor          Poor          Poor          Poor          Poor          Poor          
+	F1(F1 score - harmonic mean of precision and sensitivity)         0.0           0.04563       0.0137        0.02963       0.0           0.0           0.01594       0.00772       0.0           0.0           0.00909       0.0           0.0           
+	FN(False negative/miss/type 2 error)                              0             232           231           213           231           226           238           227           241           229           213           240           245           
+	FP(False positive/type 1 error/false alarm)                       2541          19            57            49            5             1             9             30            17            24            5             3             6             
+	FPR(Fall-out or false positive rate)                              0.91337       0.00747       0.02236       0.0191        0.00196       0.00039       0.00354       0.01175       0.00669       0.0094        0.00195       0.00118       0.00236       
+	N(Condition negative)                                             2782          2544          2549          2565          2551          2556          2542          2554          2541          2553          2568          2542          2537          
+	P(Condition positive or support)                                  0             238           233           217           231           226           240           228           241           229           214           240           245           
+	POP(Population)                                                   2782          2782          2782          2782          2782          2782          2782          2782          2782          2782          2782          2782          2782          
+	PPV(Precision or positive predictive value)                       0.0           0.24          0.0339        0.07547       0.0           0.0           0.18182       0.03226       0.0           0.0           0.16667       0.0           0.0           
+	TN(True negative/correct rejection)                               241           2525          2492          2516          2546          2555          2533          2524          2524          2529          2563          2539          2531          
+	TON(Test outcome negative)                                        241           2757          2723          2729          2777          2781          2771          2751          2765          2758          2776          2779          2776          
+	TOP(Test outcome positive)                                        2541          25            59            53            5             1             11            31            17            24            6             3             6             
+	TP(True positive/hit)                                             0             6             2             4             0             0             2             1             0             0             1             0             0             
+	TPR(Sensitivity, recall, hit rate, or true positive rate)         None          0.02521       0.00858       0.01843       0.0           0.0           0.00833       0.00439       0.0           0.0           0.00467       0.0           0.0           
+
+
+
+Processing submission #0: /oliver/SAM2/PARTICLE_COORDS/deepict_reconstruction.txt
+
+	### Warning
+	Detected particles with Z<156 or Z>356, most likely the submission is in 0 to 199 Z coordinates
+	Adding +156 padding to all Z coordinates of predicted particles.
+
+	### Localization
+	Submission has 5107 predicted particles
+	Tomogram has 2782 particles
+	TP: 2551 unique particles found
+	FP: 365 predicted particles are false positive
+	FN: 231 unique particles not found
+	There was 1339 particles that had more than one prediction
+	There was 0 predicted particles that were outside of tomo bounds
+	Average euclidean distance from predicted center to ground truth center: 2.448255133067318
+	Recall: 0.91697
+	Precision: 0.49951
+	Miss rate: 0.08303
+	F1 score: 0.64672
+
+	### Classification
+	Predict    0          3cf3       1s3x       1u6g       4cr2       1qvr       3h84       2cg9       3qm1       3gl1       3d2f       4d8q       1bxn       
+	Actual
+	0          0          0          0          0          0          0          0          0          0          0          0          0          0          
+	
+	3cf3       27         181        7          7          1          10         2          2          0          0          1          0          0          
+	
+	1s3x       66         1          154        1          0          0          1          3          5          2          0          0          0          
+	
+	1u6g       19         8          14         145        0          1          10         6          1          7          6          0          0          
+	
+	4cr2       1          2          9          1          217        0          0          0          1          0          0          0          0          
+	
+	1qvr       12         28         2          11         19         152        2          0          0          0          0          0          0          
+	
+	3h84       12         7          59         64         1          3          90         2          1          0          1          0          0          
+	
+	2cg9       40         4          22         70         0          0          17         48         3          19         5          0          0          
+	
+	3qm1       14         1          153        9          0          0          12         8          40         4          0          0          0          
+	
+	3gl1       27         0          43         22         0          0          30         34         30         41         2          0          0          
+	
+	3d2f       12         3          41         87         0          0          36         6          3          13         13         0          0          
+	
+	4d8q       0          2          0          1          4          2          3          0          0          0          0          228        0          
+	
+	1bxn       1          23         0          22         1          6          0          2          0          1          0          0          189        
+	
+
+	Overall Statistics : 
+	
+	ACC Macro                                                         0.92899
+	F1 Macro                                                          0.49306
+	FPR Macro                                                         0.03812
+	Kappa                                                             0.50027
+	NPV Macro                                                         0.96223
+	Overall ACC                                                       0.53846
+	PPV Macro                                                         0.5681
+	SOA1(Landis & Koch)                                               Moderate
+	TPR Macro                                                         None
+	Zero-one Loss                                                     1284
+	
+	Class Statistics :
+	
+	Classes                                                           0             3cf3          1s3x          1u6g          4cr2          1qvr          3h84          2cg9          3qm1          3gl1          3d2f          4d8q          1bxn          
+	ACC(Accuracy)                                                     0.91697       0.95111       0.84579       0.86808       0.98562       0.96549       0.90546       0.91265       0.91193       0.91589       0.92236       0.99569       0.97987       
+	AUC(Area under the ROC curve)                                     None          0.86473       0.76182       0.7766        0.9646        0.83198       0.66527       0.59293       0.57433       0.58051       0.52745       0.975         0.88571       
+	AUCI(AUC value interpretation)                                    None          Very Good     Good          Good          Excellent     Very Good     Fair          Poor          Poor          Poor          Poor          Excellent     Very Good     
+	F1(F1 score - harmonic mean of precision and sensitivity)         0.0           0.72691       0.41791       0.4414        0.91561       0.76          0.40632       0.28319       0.24615       0.25949       0.10744       0.97436       0.87097       
+	FN(False negative/miss/type 2 error)                              0             57            79            72            14            74            150           180           201           188           201           12            56            
+	FP(False positive/type 1 error/false alarm)                       231           79            350           295           26            22            113           63            44            46            15            0             0             
+	FPR(Fall-out or false positive rate)                              0.08303       0.03105       0.13731       0.11501       0.01019       0.00861       0.04445       0.02467       0.01732       0.01802       0.00584       0.0           0.0           
+	N(Condition negative)                                             2782          2544          2549          2565          2551          2556          2542          2554          2541          2553          2568          2542          2537          
+	P(Condition positive or support)                                  0             238           233           217           231           226           240           228           241           229           214           240           245           
+	POP(Population)                                                   2782          2782          2782          2782          2782          2782          2782          2782          2782          2782          2782          2782          2782          
+	PPV(Precision or positive predictive value)                       0.0           0.69615       0.30556       0.32955       0.893         0.87356       0.44335       0.43243       0.47619       0.47126       0.46429       1.0           1.0           
+	TN(True negative/correct rejection)                               2551          2465          2199          2270          2525          2534          2429          2491          2497          2507          2553          2542          2537          
+	TON(Test outcome negative)                                        2551          2522          2278          2342          2539          2608          2579          2671          2698          2695          2754          2554          2593          
+	TOP(Test outcome positive)                                        231           260           504           440           243           174           203           111           84            87            28            228           189           
+	TP(True positive/hit)                                             0             181           154           145           217           152           90            48            40            41            13            228           189           
+	TPR(Sensitivity, recall, hit rate, or true positive rate)         None          0.7605        0.66094       0.6682        0.93939       0.67257       0.375         0.21053       0.16598       0.17904       0.06075       0.95          0.77143       
+
+
+
