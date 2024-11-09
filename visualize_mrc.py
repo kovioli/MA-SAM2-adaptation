@@ -15,7 +15,7 @@ PRED_PATH = os.path.join(
     f"{DS_NAME}.mrc",
 )
 
-MODEL_NAME = "TS_0001_s8_p8_r3"
+MODEL_NAME = "TS_0001_s8-64_p0_r2"
 model_name = f"{MODEL_NAME}_best"
 
 # TS_0001_s16_p10_r1_best
@@ -30,7 +30,7 @@ deepict_pred_folder = os.path.join(
     "PREDICT",
     "predictions",
     model_name,
-    "TS_0004",
+    "TS_0002",
     "ribo",
     "probability_map.mrc",
 )

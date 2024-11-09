@@ -9,7 +9,7 @@ from DATA_POSTPROCESSOR.particle_picking_eval import eval_picking
 
 TRAIN_DS_ID = "0001"
 VAL_DS_ID = "0010"
-MODEL_NAME = "TS_0001_s8_p8_r3"
+MODEL_NAME = "TS_0001_s8-64_p2_r1"
 model_name = f"{MODEL_NAME}_best"
 
 # TS_0001_s16_p10_r1_best
