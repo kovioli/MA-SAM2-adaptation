@@ -55,10 +55,12 @@ with mrcfile.open(deepict_pred_folder) as mrc:
 # %%
 
 
-TOMOGRAM_PATH = os.path.join("/media", "hdd1", "oliver", "EMPIAR", f"{DS_NAME}.rec")
+TOMOGRAM_PATH = os.path.join(
+    "/media", "hdd1", "oliver", "EMPIAR_DCR", "TS_0001", "16-64", "0", "tomogram.mrc"
+)
 
 RIBO_PATH = os.path.join(
-    "/media", "hdd1", "oliver", "EMPIAR", f"{DS_NAME}_cyto_ribosomes.mrc"
+    "/media", "hdd1", "oliver", "EMPIAR_DCR", "TS_0001", "16-64", "0", "ribosome.mrc"
 )
 
 with mrcfile.open(RIBO_PATH) as mrc, mrcfile.open(TOMOGRAM_PATH) as mrc_tomo:

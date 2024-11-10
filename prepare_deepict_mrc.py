@@ -46,7 +46,7 @@ def save_mrc(volume, path):
     print(f"Saved volume at {path}")
 
 
-def process_tomo(position):
+def process_tomo(position, target_height):
     tomogram_path = os.path.join(
         "/media/hdd1/oliver/EMPIAR_clean", "tomograms", "TS_0001.mrc"
     )
@@ -61,14 +61,14 @@ def process_tomo(position):
     # Convert to float32 after normalization
     norm_tomo = ((tomogram - np.mean(tomogram)) / np.std(tomogram)).astype(np.float32)
 
-    tomo_sliced = get_sliced_volume(norm_tomo, position)
-    ribo_sliced = get_sliced_volume(ribosome, position)
+    tomo_sliced = get_sliced_volume(norm_tomo, position, target_height=target_height)
+    ribo_sliced = get_sliced_volume(ribosome, position, target_height=target_height)
 
     return tomo_sliced, ribo_sliced
 
 
 if __name__ == "__main__":
-    orig_slice = 8
+    orig_slice = 32
     cache_dir = os.path.join(
         "/media", "hdd1", "oliver", "EMPIAR_DCR", "TS_0001", f"{orig_slice}-64"
     )
@@ -78,7 +78,7 @@ if __name__ == "__main__":
         print(f"Processing position {position}")
         final_dir = os.path.join(cache_dir, str(position))
         os.makedirs(final_dir, exist_ok=True)
-        tomo, ribo = process_tomo(position=position)
+        tomo, ribo = process_tomo(position=position, target_height=464)
         save_mrc(tomo, os.path.join(final_dir, "tomogram.mrc"))
         save_mrc(ribo, os.path.join(final_dir, "ribosome.mrc"))
 # %%
