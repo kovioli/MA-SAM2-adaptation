@@ -69,3 +69,28 @@ with mrcfile.open(RIBO_PATH) as mrc, mrcfile.open(TOMOGRAM_PATH) as mrc_tomo:
     tomo = mrc_tomo.data
     print(f"RIBO SHAPE: {ribo.shape} | TOMO SHAPE: {tomo.shape}")
 # %%
+
+# %%
+import os
+import mrcfile
+import numpy as np
+
+position = 0
+ribo_path = os.path.join(
+    "/media",
+    "hdd1",
+    "oliver",
+    "EMPIAR_DCR",
+    "TS_0001",
+    "8-64",
+    str(position),
+    "ribosome.mrc",
+)
+with mrcfile.open(ribo_path) as mrc:
+    ribo = mrc.data
+    print(f"RIBO SHAPE: {ribo.shape}")
+
+print(f"Total voxels: {ribo.size}")
+print(f"Total ribo voxels: {int(np.sum(ribo))}")
+
+# %%

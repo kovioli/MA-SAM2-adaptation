@@ -98,7 +98,7 @@ if __name__ == "__main__":
         ("TS_0001_s32_p4_25102024_00:33:05.json", 4),
         ("TS_0001_s32_p5_25102024_00:51:19.json", 5),
     ]
-    SLICE_NR = "32-64"
+    SLICE_NR = "8-64"
     # json_file_names = [
     #     ("TS_0001_s128_p0_r1.json", 0),
     #     ("TS_0001_s128_p0_4_r1.json", 0.4),
@@ -120,9 +120,9 @@ if __name__ == "__main__":
         ("TS_0001_s16-64_p2_r2.json", 2),
     ]
     json_file_names = [
-        ("TS_0001_s32-64_p0_r3.json", 0),
-        ("TS_0001_s32-64_p1_r2.json", 1),
-        ("TS_0001_s32-64_p2_r4.json", 2),
+        ("TS_0001_s8-64_p0_r0.json", 0),
+        ("TS_0001_s8-64_p1_r4.json", 1),
+        ("TS_0001_s8-64_p2_r4.json", 2),
     ]
     json_files = []
     for file_name in json_file_names:
