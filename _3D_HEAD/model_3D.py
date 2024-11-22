@@ -187,7 +187,7 @@ class HeadModel(nn.Module):
         img_add = torch.clamp(img_add, 0, 255)
 
         masks, memory = self.sam2(img_add, memory)
-        return masks, memory
+        return masks, denoised_img, memory
         # return masks, denoised_img, memory
 
 

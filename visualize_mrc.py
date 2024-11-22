@@ -94,3 +94,50 @@ print(f"Total voxels: {ribo.size}")
 print(f"Total ribo voxels: {int(np.sum(ribo))}")
 
 # %%
+# SHREC
+import os
+import mrcfile
+import numpy as np
+import matplotlib.pyplot as plt
+
+model_nr = 0
+class_mask = os.path.join(
+    "/media",
+    "hdd1",
+    "oliver",
+    "shrec2020_full_dataset",
+    f"model_{model_nr}",
+    "class_mask.mrc",
+)
+
+grandmodel_path = os.path.join(
+    "/media",
+    "hdd1",
+    "oliver",
+    "shrec2020_full_dataset",
+    f"model_{model_nr}",
+    "grandmodel.mrc",
+)
+
+reconstruction_path = os.path.join(
+    "/media",
+    "hdd1",
+    "oliver",
+    "shrec2020_full_dataset",
+    f"model_{model_nr}",
+    "reconstruction.mrc",
+)
+with mrcfile.open(class_mask, permissive=True) as mrc:
+    class_mask = mrc.data
+    print(f"Class mask SHAPE: {class_mask.shape}")
+
+with mrcfile.open(grandmodel_path, permissive=True) as mrc:
+    grandmodel = mrc.data
+    print(f"Grandmodel SHAPE: {grandmodel.shape}")
+
+with mrcfile.open(reconstruction_path, permissive=True) as mrc:
+    reconstruction = mrc.data
+    reconstruction = reconstruction[156:356]
+    print(f"Reconstruction SHAPE: {reconstruction.shape}")
+
+# %%

@@ -18,7 +18,7 @@ from torch.cuda.amp import autocast
 from matplotlib import pyplot as plt
 
 DS_ID = "TS_0001"
-NR_SLICES = 8
+NR_SLICES = 128
 
 with open(f"/oliver/SAM2/log_s{NR_SLICES}.csv", "r") as file:
     csv_data = file.read()
@@ -63,6 +63,25 @@ pred_tomogram_info_list = [
     {"name": "TS_0009", "z_offset": 120, "target_shape": (250, 928, 928)},
     {"name": "TS_0010", "z_offset": 350, "target_shape": (290, 927, 927)},
 ]
+import pdb
+
+
+def save_debug_state(
+    input_slice, label_slice, pred, denoised_img, pred_sigmoid, pred_binary
+):
+    # Create a dictionary of all the tensors you want to save
+    debug_data = {
+        "input_slice": input_slice.cpu().numpy(),
+        "label_slice": label_slice.cpu().numpy(),
+        "pred": pred.cpu().numpy(),
+        "denoised_img": denoised_img.cpu().numpy(),
+        "pred_sigmoid": pred_sigmoid.cpu().numpy(),
+        "pred_binary": pred_binary.cpu().numpy(),
+    }
+
+    # Save all tensors
+    np.save("debug_data.npy", debug_data)
+
 
 for idx, row in best_runs.iterrows():
     timestamp = row["timestamp"]
@@ -82,9 +101,9 @@ for idx, row in best_runs.iterrows():
 
     json_results = []
     for DS in pred_tomogram_info_list:
-        if DS["name"] == DS_ID:
-            # skip training DS
-            continue
+        # if DS["name"] == DS_ID:
+        #     # skip training DS
+        #     continue
         print(f"EVALUATING TOMOGRAM {DS['name']}")
         ds = MRCDataset(
             main_folder="/media/hdd1/oliver/EMPIAR_clean",
@@ -103,7 +122,7 @@ for idx, row in best_runs.iterrows():
                 input_slice, label_slice = ds[i]
                 input_slice = input_slice.unsqueeze(0)
                 with autocast():
-                    pred, _ = model(input_slice)
+                    pred, denoised_img, _ = model(input_slice)
                 pred = pred.squeeze(0)
                 pred_sigmoid = torch.sigmoid(pred)
                 pred_binary = pred_sigmoid > 0.5
@@ -115,6 +134,16 @@ for idx, row in best_runs.iterrows():
                 iou_scores.append(iou)
 
                 pred_cpu = pred.cpu().numpy().squeeze(0)
+                if i == 120:
+                    save_debug_state(
+                        input_slice,
+                        label_slice,
+                        pred,
+                        denoised_img,
+                        pred_sigmoid,
+                        pred_binary,
+                    )
+                    break
                 all_predictions.append(pred_cpu)
 
         average_dice = np.mean(dice_scores)
