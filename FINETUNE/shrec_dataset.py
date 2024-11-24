@@ -38,19 +38,32 @@ def read_mrc(file_path):
 
 
 def create_multi_ds(
-    main_folder, train_DS_IDs, val_DS_IDs, particle_id: int, device="cuda"
+    main_folder,
+    train_DS_IDs,
+    val_DS_IDs,
+    particle_id: int,
+    input_type: str,
+    device="cuda",
 ):
     train_datasets = []
     val_datasets = []
     for DS_ID in train_DS_IDs:
         ds = MRCDataset(
-            main_folder=main_folder, DS_ID=DS_ID, particle_id=particle_id, device=device
+            main_folder=main_folder,
+            DS_ID=DS_ID,
+            particle_id=particle_id,
+            device=device,
+            input_type=input_type,
         )
         train_datasets.append(ds)
 
     for DS_ID in val_DS_IDs:
         ds = MRCDataset(
-            main_folder=main_folder, DS_ID=DS_ID, particle_id=particle_id, device=device
+            main_folder=main_folder,
+            DS_ID=DS_ID,
+            particle_id=particle_id,
+            device=device,
+            input_type=input_type,
         )
         val_datasets.append(ds)
 
@@ -60,7 +73,6 @@ def create_multi_ds(
     print(f"Full train-DS length: {len(train_ds)}")
 
     val_indices = np.arange(len(val_ds))
-    val_indices = val_indices[::4]
 
     val_ds = Subset(val_ds, val_indices)
 
@@ -97,9 +109,17 @@ class MRCDataset(Dataset):
             input_file = os.path.join(data_dir, "reconstruction.mrc")
             uncropped_data = read_mrc(input_file).copy().astype(np.float32)
             self.input_volume = uncropped_data[156:356].copy()
+            # self.input_volume = self.input_volume[
+            #     100 - 32 : 100 + 32
+            # ].copy()  # changed to 64 slices
+            # self.input_volume = uncropped_data[206:306].copy()  # changed to 100 slices
 
         label_file = os.path.join(data_dir, "class_mask.mrc")
         self.label_volume = read_mrc(label_file).copy()
+        # self.label_volume = read_mrc(label_file)[50:150].copy()  # changed to 100 slices
+        # self.label_volume = read_mrc(label_file)[
+        #     100 - 32 : 100 + 32
+        # ].copy()  # changed to 64 slices
 
         self.label_volume = (self.label_volume == particle_id).astype(np.uint8)
         self.input_volume = (self.input_volume - np.mean(self.input_volume)) / np.std(
@@ -108,6 +128,9 @@ class MRCDataset(Dataset):
         assert (
             self.input_volume.shape == self.label_volume.shape
         ), "Input and label volumes must have the same shape"
+        print(
+            f"MRCDataset | Input volume shape: {self.input_volume.shape} | Label volume shape: {self.label_volume.shape}"
+        )
 
         # Store the depth (number of slices)
         self.depth = self.input_volume.shape[0]

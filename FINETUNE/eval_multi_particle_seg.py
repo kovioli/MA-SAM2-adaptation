@@ -56,6 +56,29 @@ particle_ts_mapping = {
         {"particle_id": 11, "particle_name": "4d8q", "ts": "01112024_16:27:55"},
         {"particle_id": 12, "particle_name": "1bxn", "ts": "01112024_20:46:32"},
     ],
+    "reconstruction_1ds_large": [
+        {"particle_id": 12, "particle_name": "1bxn", "ts": "22112024_14:37:17"},
+    ],
+    "reconstruction_half_ds_large": [
+        {"particle_id": 12, "particle_name": "1bxn", "ts": "22112024_17:15:52"},
+    ],
+    "reconstruction_s64_large": [
+        {"particle_id": 12, "particle_name": "1bxn", "ts": "22112024_21:51:49"},
+    ],
+    "reconstruction_1ds_final_large": [
+        {"particle_id": 1, "particle_name": "3cf3", "ts": "22112024_22:18:19"},
+        {"particle_id": 2, "particle_name": "1s3x", "ts": "22112024_22:46:29"},
+        {"particle_id": 3, "particle_name": "1u6g", "ts": "22112024_23:09:14"},
+        {"particle_id": 4, "particle_name": "4cr2", "ts": "22112024_23:31:06"},
+        {"particle_id": 5, "particle_name": "1qvr", "ts": "23112024_00:05:01"},
+        {"particle_id": 6, "particle_name": "3h84", "ts": "23112024_00:28:59"},
+        {"particle_id": 7, "particle_name": "2cg9", "ts": "23112024_00:50:49"},
+        {"particle_id": 8, "particle_name": "3qm1", "ts": "23112024_01:12:42"},
+        {"particle_id": 9, "particle_name": "3gl1", "ts": "23112024_01:34:34"},
+        {"particle_id": 10, "particle_name": "3d2f", "ts": "23112024_01:58:37"},
+        {"particle_id": 11, "particle_name": "4d8q", "ts": "23112024_02:20:29"},
+        {"particle_id": 12, "particle_name": "1bxn", "ts": "23112024_02:52:32"},
+    ],
 }
 test_ds_name = "model_9"
 
@@ -66,7 +89,7 @@ model_info = MODEL_DICT[MODEL_TYPE]
 model = HeadFinetuneModel(model_type=MODEL_TYPE, device=DEVICE)
 
 
-run_id = "reconstruction_8ds_large"
+run_id = "reconstruction_1ds_final_large"
 base_folder = os.path.join(
     "/media",
     "hdd1",

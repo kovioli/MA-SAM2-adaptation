@@ -1,7 +1,7 @@
 import torch
 
 # settings
-DEVICE_NUM = 2
+DEVICE_NUM = 1
 DEVICE = torch.device(f"cuda:{DEVICE_NUM}" if torch.cuda.is_available() else "cpu")
 
 # hyperparams
@@ -37,13 +37,13 @@ MIN_DELTA = 0.01
 THRESHOLD = (0.1, 0.3, 0.5, 0.7, 0.9)
 TRAIN_IDs = [
     "model_0",
-    "model_1",
-    "model_2",
-    "model_3",
-    "model_4",
-    "model_5",
-    "model_6",
-    "model_7",
+    # "model_1",
+    # "model_2",
+    # "model_3",
+    # "model_4",
+    # "model_5",
+    # "model_6",
+    # "model_7",
 ]
 # TRAIN_IDs = ["model_0", "model_1", "model_2", "model_3"]
 # TRAIN_IDs = ["model_0", "model_1"]
@@ -67,3 +67,5 @@ particle_mapping = {
     "4d8q": 11,
     "1bxn": 12,
 }
+
+DATASET_TYPE = "reconstruction"  # 'reconstruction', 'grandmodel'

@@ -40,7 +40,7 @@ def process_dataset(input_folder, output_base_folder):
     # Get all model folders
     model_folders = sorted(glob.glob(os.path.join(input_folder, "model_*")))
 
-    for model_folder in model_folders:
+    for model_folder in [model_folders[i] for i in range(10) if i in [0, 8, 9]]:
         model_name = os.path.basename(model_folder)
         print(f"Processing {model_name}...")
 

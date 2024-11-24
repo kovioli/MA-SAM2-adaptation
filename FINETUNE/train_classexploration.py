@@ -27,6 +27,7 @@ from config import (
     VAL_IDs,
     MODEL_DICT,
     PROMPT_GRID,
+    DATASET_TYPE,
     particle_mapping,
 )
 
@@ -150,9 +151,7 @@ def train(model, train_dataloader, test_dataloader, epoch, step):
 
 
 if __name__ == "__main__":
-    multi_training_log_path = (
-        f"shrec2020_headfinetune_ce_reconstruction_{len(TRAIN_IDs)}ds_{MODEL_TYPE}.log"
-    )
+    multi_training_log_path = f"shrec2020_headfinetune_ce_reconstruction_{len(TRAIN_IDs)}ds_final_{MODEL_TYPE}.log"
 
     for particle_name, p_id in particle_mapping.items():
         if particle_name == "background":
@@ -207,6 +206,7 @@ if __name__ == "__main__":
             train_DS_IDs=TRAIN_IDs,
             val_DS_IDs=VAL_IDs,
             particle_id=p_id,
+            input_type=DATASET_TYPE,
             device=DEVICE,
         )
         train_dataloader = torch.utils.data.DataLoader(

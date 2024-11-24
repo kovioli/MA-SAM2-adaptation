@@ -38,20 +38,33 @@ import numpy as np
 #     "ribo",
 #     "probability_map.mrc",
 # )
-TOMOGRAM_PATH = os.path.join(
+DEEPICT_PRED_PATH = os.path.join(
     "/media",
     "hdd1",
     "oliver",
     "DeePiCt",
     "PREDICT",
     "predictions",
-    "shrec_p01_grandmodel_best",
-    "model_9_p1_grandmodel",
+    "TS_0001_s8-64_p1_r4_best",
+    "TS_0002",
     "ribo",
     "probability_map.mrc",
 )
+
+INPUT_PATH = os.path.join(
+    "/media", "hdd1", "oliver", "EMPIAR_clean", "tomograms", "TS_0002.mrc"
+)
+LABEL_PATH = os.path.join(
+    "/media", "hdd1", "oliver", "EMPIAR_clean", "ribosomes", "TS_0002.mrc"
+)
+
 # TOMOGRAM_PATH = os.path.join(
-#     "/media", "hdd1", "oliver", "DEEPICT_SHREC", "model_9", "class_mask_1.mrc"
+#     "/media",
+#     "hdd1",
+#     "oliver",
+#     "DEEPICT_SHREC",
+#     "model_0",
+#     "reconstruction_cropped.mrc",
 # )
 
 
@@ -79,5 +92,8 @@ def read_mrc(file_path):
     return data
 
 
-tomo = read_mrc(TOMOGRAM_PATH)
+deepict_pred = read_mrc(DEEPICT_PRED_PATH)
+input_tomo = read_mrc(INPUT_PATH)
+label_tomo = read_mrc(LABEL_PATH)
+
 # %%
