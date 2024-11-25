@@ -18,7 +18,7 @@ from torch.cuda.amp import autocast
 from matplotlib import pyplot as plt
 
 DS_ID = "TS_0001"
-NR_SLICES = 128
+NR_SLICES = 8
 
 with open(f"/oliver/SAM2/log_s{NR_SLICES}.csv", "r") as file:
     csv_data = file.read()
@@ -101,9 +101,9 @@ for idx, row in best_runs.iterrows():
 
     json_results = []
     for DS in pred_tomogram_info_list:
-        # if DS["name"] == DS_ID:
-        #     # skip training DS
-        #     continue
+        if DS["name"] == DS_ID:
+            # skip training DS
+            continue
         print(f"EVALUATING TOMOGRAM {DS['name']}")
         ds = MRCDataset(
             main_folder="/media/hdd1/oliver/EMPIAR_clean",
@@ -135,15 +135,17 @@ for idx, row in best_runs.iterrows():
 
                 pred_cpu = pred.cpu().numpy().squeeze(0)
                 if i == 120:
-                    save_debug_state(
-                        input_slice,
-                        label_slice,
-                        pred,
-                        denoised_img,
-                        pred_sigmoid,
-                        pred_binary,
-                    )
-                    break
+                    pdb.set_trace()
+                # if i == 120:
+                #     save_debug_state(
+                #         input_slice,
+                #         label_slice,
+                #         pred,
+                #         denoised_img,
+                #         pred_sigmoid,
+                #         pred_binary,
+                #     )
+                #     break
                 all_predictions.append(pred_cpu)
 
         average_dice = np.mean(dice_scores)
