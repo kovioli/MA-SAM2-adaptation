@@ -1,5 +1,5 @@
 # SAM2 Particle Detection Pipeline for SHREC-2020
-This repository contains a pipeline for detecting and localizing particles in cryo-electron tomograms using a fine-tuned SAM2 model. The pipeline works with the SHREC-2020 dataset, which should be downloaded and organized in a folder structure containing reconstruction tomograms and class masks.
+This repository contains a pipeline for detecting and localizing particles in cryo-electron tomograms using a fine-tuned SAM2 model. The folders `sam2` and `sam2_configs` are cloned from the [official repository](https://github.com/facebookresearch/sam2) of Meta. The pipeline works with the SHREC-2020 dataset, which should be downloaded and organized in a folder structure containing reconstruction tomograms and class masks.
 
 ## Pipeline Overview
 
