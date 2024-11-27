@@ -2,11 +2,7 @@
 import torch
 import torch.nn as nn
 import numpy as np
-import sys
 from typing import List
-
-sys.path.append("/oliver/SAM2")
-import pdb
 from _3D_HEAD.unet_check import UNET_CHECK_model
 from sam2.build_sam import build_sam2
 from sam2.utils.transforms import SAM2Transforms
@@ -148,19 +144,19 @@ class SAM2_MODEL(nn.Module):
 model_dict = {
     "tiny": {
         "config": "sam2_hiera_t.yaml",
-        "ckpt": "/media/hdd1/oliver/SAM2/checkpoints/sam2_hiera_tiny.pt",
+        "ckpt": ".../checkpoints/sam2_hiera_tiny.pt",
     },
     "small": {
         "config": "sam2_hiera_s.yaml",
-        "ckpt": "/media/hdd1/oliver/SAM2/checkpoints/sam2_hiera_small.pt",
+        "ckpt": ".../checkpoints/sam2_hiera_small.pt",
     },
     "base": {
         "config": "sam2_hiera_b+.yaml",
-        "ckpt": "/media/hdd1/oliver/SAM2/checkpoints/sam2_hiera_base_plus.pt",
+        "ckpt": ".../checkpoints/sam2_hiera_base_plus.pt",
     },
     "large": {
         "config": "sam2_hiera_l.yaml",
-        "ckpt": "/media/hdd1/oliver/SAM2/checkpoints/sam2_hiera_large.pt",
+        "ckpt": ".../checkpoints/sam2_hiera_large.pt",
     },
 }
 
@@ -189,14 +185,3 @@ class HeadModel(nn.Module):
         masks, memory = self.sam2(img_add, memory)
         return masks, denoised_img, memory
         # return masks, denoised_img, memory
-
-
-# sam2_cp = "/oliver/SAM2/checkpoints/sam2_hiera_tiny.pt"
-# model_cfg = "sam2_hiera_t.yaml"
-# model = SAM2_MODEL(model_cfg, sam2_cp, DEVICE)
-
-# image = Image.open('/oliver/SAM2/0100.png')
-# image = image.resize((1024, 1024))
-# image = np.array(image.convert("RGB"))
-# image = model._transforms(image)
-# image = image[None, ...].to(DEVICE)

@@ -1,5 +1,4 @@
 # %%
-# TODO: export PYTHONPATH="/oliver/MA:$PYTHONPATH"
 import sys
 
 sys.path.append("..")
@@ -11,7 +10,6 @@ from statistics import mean
 import json
 from DATA_POSTPROCESSOR.clustering_and_cleaning import cluster_and_clean
 from DATA_POSTPROCESSOR.particle_picking_eval import eval_picking
-from DATA_POSTPROCESSOR.predict_tomogram import predict
 import pandas as pd
 
 TRAIN_DS_ID = "TS_0001"
@@ -30,7 +28,7 @@ pred_tomogram_info_list = [
     {"name": "TS_0009", "z_offset": 120, "target_shape": (250, 928, 928)},
     {"name": "TS_0010", "z_offset": 350, "target_shape": (290, 927, 927)},
 ]
-training_folder = os.path.join("/media", "hdd1", "oliver", "SAM2_EMPIAR_DCR")
+training_folder = os.path.join("...")
 
 
 # threshold_list = np.arange(0.6, 0.85, 0.025)
@@ -40,7 +38,7 @@ threshold_list = np.arange(0.65, 0.9, 0.025)
 if __name__ == "__main__":
     NR_SLICES = 8
 
-    with open(f"/oliver/SAM2/log_s{NR_SLICES}.csv", "r") as file:
+    with open(f".../log_s{NR_SLICES}.csv", "r") as file:
         csv_data = file.read()
 
     # Convert to DataFrame, filtering relevant columns and parsing iou/dice values
@@ -78,7 +76,7 @@ if __name__ == "__main__":
             print(f"\n\n{50*'-'}\nPROCESSING DS: {tomo_id}\n{50*'-'}\n")
             # Find the relevant info
             gt_motl_path = os.path.join(
-                "/oliver", "MA", "GT_particle_lists", f"{tomo_id}_cyto_ribosomes.csv"
+                "GT_particle_lists", f"{tomo_id}_cyto_ribosomes.csv"
             )
 
             best_F1_on_th = -1.0  # best F1 score depending on threshold
@@ -110,11 +108,7 @@ if __name__ == "__main__":
         # TODO: change json save path
         with open(
             os.path.join(
-                "/oliver",
-                "SAM2",
-                "dc_eval",
-                "SAM2",
-                f"{TRAIN_DS_ID}_s{NR_SLICES}_{position}_{timestamp}.json",
+                "..." f"{TRAIN_DS_ID}_s{NR_SLICES}_{position}_{timestamp}.json",
             ),
             "w",
         ) as f:

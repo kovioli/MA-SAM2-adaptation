@@ -33,10 +33,7 @@ class MRCDataset(Dataset):
                 raise ValueError("s and p must be provided when full_tomo=False")
 
             self.cache_dir = os.path.join(
-                "/media",
-                "hdd1",
-                "oliver",
-                "EMPIAR_DCR",
+                "...",
                 ds_id,
                 str(s),
                 self.stringify_p(p),
@@ -200,8 +197,9 @@ class MRCDataset(Dataset):
         return input_tensor, label_tensor
 
 
+# Example usage:
 # ds = MRCDataset(
-#     main_folder="/media/hdd1/oliver/EMPIAR_clean",
+#     main_folder=".../EMPIAR_clean",
 #     ds_id="TS_0010",
 #     s=64,
 #     p=2,

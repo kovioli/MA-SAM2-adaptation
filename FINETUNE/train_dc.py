@@ -43,7 +43,7 @@ class TrainingPipeline:
         self.epochs_without_improvement = 0
 
         # Setup paths
-        base_path = Path("/media/hdd1/oliver/SAM2_EMPIAR_DCR")
+        base_path = Path("...")
         self.model_save_dir = base_path / "checkpoints" / timestamp
         self.model_save_dir.mkdir(parents=True, exist_ok=True)
         self.writer = SummaryWriter(log_dir=str(base_path / "logs" / timestamp))
@@ -64,14 +64,14 @@ class TrainingPipeline:
     def setup_dataloaders(self, p: int) -> Tuple[DataLoader, DataLoader]:
         """Create training and validation dataloaders."""
         train_ds = MRCDataset(
-            main_folder="/media/hdd1/oliver/EMPIAR_clean",
+            main_folder=".../EMPIAR_clean",
             ds_id=TRAIN_ID,
             s=NR_SLICES,
             p=p,
             device=DEVICE,
         )
         val_ds = MRCDataset(
-            main_folder="/media/hdd1/oliver/EMPIAR_clean",
+            main_folder=".../EMPIAR_clean",
             ds_id=VAL_DS_CONF["ds_id"],
             s=VAL_DS_CONF["s"],
             p=VAL_DS_CONF["p"],
@@ -179,7 +179,7 @@ class TrainingPipeline:
     def log_run(self, p, r: int, best_iou: float, best_dice: float):
         """Log run configuration."""
         log_string = f"{self.timestamp},{MODEL_TYPE},{TRAIN_ID},s{NR_SLICES},p{self.stringify_p(p)},r{r},best_iou={best_iou:.4f},best_dice={best_dice:.4f}"
-        log_path = Path("/oliver/SAM2") / f"log_s{NR_SLICES}.csv"
+        log_path = Path("...") / f"log_s{NR_SLICES}.csv"
         print("LOGS:", log_string)
         with open(log_path, "a") as f:
             f.write(f"{log_string}\n")

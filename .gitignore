@@ -10,8 +10,6 @@ outputs/*
 checkpoints/*.pt
 venv
 checkpoints
-sam2
-sam2_configs
 .devcontainer
 assets
 notebooks
