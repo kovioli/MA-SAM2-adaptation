@@ -92,7 +92,7 @@ class MRCDataset(Dataset):
         input_type="grandmodel",
     ):
         """
-        main_folder: str (e.g., '/media/hdd1/oliver/SHREC')
+        main_folder: str
         DS_ID: str (e.g., 'model_0')
         NOISE_VAR: float (variance of the Gaussian noise relative to the data's standard deviation)
         """
@@ -109,17 +109,9 @@ class MRCDataset(Dataset):
             input_file = os.path.join(data_dir, "reconstruction.mrc")
             uncropped_data = read_mrc(input_file).copy().astype(np.float32)
             self.input_volume = uncropped_data[156:356].copy()
-            # self.input_volume = self.input_volume[
-            #     100 - 32 : 100 + 32
-            # ].copy()  # changed to 64 slices
-            # self.input_volume = uncropped_data[206:306].copy()  # changed to 100 slices
 
         label_file = os.path.join(data_dir, "class_mask.mrc")
         self.label_volume = read_mrc(label_file).copy()
-        # self.label_volume = read_mrc(label_file)[50:150].copy()  # changed to 100 slices
-        # self.label_volume = read_mrc(label_file)[
-        #     100 - 32 : 100 + 32
-        # ].copy()  # changed to 64 slices
 
         self.label_volume = (self.label_volume == particle_id).astype(np.uint8)
         self.input_volume = (self.input_volume - np.mean(self.input_volume)) / np.std(
@@ -173,16 +165,10 @@ class MRCDataset(Dataset):
         return input_tensor, label_tensor
 
 
+# Example usage:
 # ds = MRCDataset(
-#     main_folder="/media/hdd1/oliver/shrec2020_full_dataset",
+#     main_folder=".../shrec2020_full_dataset",
 #     DS_ID="model_1",
 #     device="cpu",
 #     particle_id=1,
 # )
-# import matplotlib.pyplot as plt
-
-# plt.imshow(ds[140][1].squeeze())
-# plt.axis("off")
-# %%
-
-# %%

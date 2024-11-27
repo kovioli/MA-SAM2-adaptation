@@ -3,7 +3,7 @@ import os
 import time
 import torch
 from monai.losses import GeneralizedDiceLoss
-from shrec_dataset import MRCDataset, create_multi_ds
+from shrec_dataset import create_multi_ds
 from torch.utils.tensorboard import SummaryWriter
 from _3D_HEAD.model_3D import HeadFinetuneModel
 import datetime
@@ -25,8 +25,6 @@ from config import (
     THRESHOLD,
     TRAIN_IDs,
     VAL_IDs,
-    MODEL_DICT,
-    PROMPT_GRID,
     DATASET_TYPE,
     particle_mapping,
 )
@@ -180,10 +178,7 @@ if __name__ == "__main__":
             )
 
         model_save_dir = os.path.join(
-            "/media",
-            "hdd1",
-            "oliver",
-            "SAM2_SHREC_HEADFINETUNE",
+            "...",
             multi_training_log_path.split(".")[0],
             "checkpoints",
             timestamp_str,
@@ -191,9 +186,7 @@ if __name__ == "__main__":
         os.makedirs(model_save_dir, exist_ok=True)
         writer = SummaryWriter(
             log_dir=os.path.join(
-                "/media",
-                "hdd1",
-                "oliver",
+                "...",
                 "SAM2_SHREC_HEADFINETUNE",
                 multi_training_log_path.split(".")[0],
                 "logs",
@@ -202,9 +195,7 @@ if __name__ == "__main__":
         )
 
         train_data, val_data = create_multi_ds(
-            main_folder=os.path.join(
-                "/media", "hdd1", "oliver", "shrec2020_full_dataset"
-            ),
+            main_folder=os.path.join("...", "shrec2020_full_dataset"),
             train_DS_IDs=TRAIN_IDs,
             val_DS_IDs=VAL_IDs,
             particle_id=p_id,

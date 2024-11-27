@@ -227,6 +227,23 @@ def cluster_and_clean(
     particle_id: str,
     output_file: str,
 ) -> str:
+    """
+    Process neural network predictions to detect particles in tomograms through thresholding
+    and clustering. Generates a motive list compatible with the TOM format.
+
+    Args:
+        threshold: Float value for binary thresholding of predictions
+        min_cluster_size: Minimum size of valid particle clusters
+        max_cluster_size: Maximum size of valid particle clusters
+        clustering_connectivity: Connectivity parameter for clustering
+        prediction_dir: Directory containing prediction files
+        prediction_file: Name of the prediction file to process
+        particle_id: Particle ID from the dataset
+        output_file: Path to the output motive list file
+
+    Returns:
+        str: Path to generated motive list file, or None if no particles found
+    """
     # paths
     original_pred_path = os.path.join(prediction_dir, prediction_file)
 
@@ -371,27 +388,20 @@ particle_id_mapping = [
 mol_weight_ratio = 0.55
 volume_ratio = 0.2
 ds_name = "grandmodel_1ds_large"
-# ds_name = "reconstruction_1ds_final_large"
-output_file = f"/oliver/SAM2/PARTICLE_COORDS/{ds_name}.txt"
-
-if os.path.exists(output_file):
-    os.remove(output_file)
+output_file = f"/.../SAM2/PARTICLE_COORDS/{ds_name}.txt"
 
 for p_map in particle_id_mapping:
     cluster_and_clean(
         threshold=0.5,
-        # min_cluster_size=int(volume_ratio * p_map["volume"]),
-        min_cluster_size=int(mol_weight_ratio * p_map["mol_weight"]),
+        min_cluster_size=int(...),
         max_cluster_size=None,
         clustering_connectivity=1,
-        # prediction_dir=f"/media/hdd1/oliver/DeePiCt/PREDICT/predictions/shrec_p{p_map['particle_id']:02d}_grandmodel_1ds_best/model_9_p{p_map['particle_id']}_grandmodel/ribo/",
-        # prediction_file=f"probability_map.mrc",
-        prediction_dir=f"/media/hdd1/oliver/SAM2_SHREC_HEADFINETUNE/shrec2020_headfinetune_ce_{ds_name}/PREDICT/",
-        prediction_file=f"model_9_particle_{p_map['particle_id']}.mrc",
+        prediction_dir="...",
+        prediction_file="...",
         particle_id=p_map["particle_name"],
         output_file=output_file,
     )
 
-print(f"All particle data has been written to {output_file}")
+print("All particle data has been written to", "...")
 
 # %%

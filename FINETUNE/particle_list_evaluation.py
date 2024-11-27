@@ -1,3 +1,4 @@
+# adapted script from the shrec-2020 challenge to evaluate the particle list https://dataverse.nl/file.xhtml?fileId=296681&version=1.0
 import mrcfile as mrc
 import numpy as np
 import warnings
