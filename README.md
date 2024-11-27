@@ -25,7 +25,12 @@ Evaluate results against ground truth
 
 The implementation includes data loaders, loss functions, evaluation metrics, and TensorBoard logging for tracking training progress.
 
-## Files: FINETUNE/...
+## Files:
+### _3D_HEAD
+- `model_3D.py`: Contains the Head-Promptable SAM2 model with trainable image encoder and mask decoder with the attached U-Net
+- `unet_check.py`: Contains the checkerboard-corrected U-Net implementation used as the head model
+
+### FINETUNE
 - `cluster_motl.py`: Contains utilities for processing and analyzing 3D tomographic data, with the main function cluster_and_clean performing particle detection in tomograms. The function takes prediction data from a neural network, applies thresholding and clustering to identify particle positions, and generates a motive list file in csv format containing particle coordinates and properties. Supporting functions handle MRC file I/O, cluster analysis, and coordinate transformations.
 - `config.py`: Contains configuration settings for a deep learning model, specifically using SAM2 (Segment Anything Model 2). It defines key parameters including device settings, hyperparameters, model configurations for different sizes (tiny to large), logging settings, and dataset specifications with particle type mappings.
 - `eval_multi_particle_seg.py`: Performs model evaluation on tomographic data using the HeadFinetuneModel with SAM2. It processes predictions for different particle types, calculates Dice and IoU metrics, and saves results as MRC files and a JSON summary. The evaluation uses a mapping of particle IDs to specific training timestamps. The segmentations are used as the basis for `cluster_motl.py` to generate motive lists.
