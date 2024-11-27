@@ -79,6 +79,23 @@ particle_ts_mapping = {
         {"particle_id": 11, "particle_name": "4d8q", "ts": "23112024_02:20:29"},
         {"particle_id": 12, "particle_name": "1bxn", "ts": "23112024_02:52:32"},
     ],
+    "grandmodel_1ds_large_orig": [
+        {"particle_id": 1, "particle_name": "3cf3", "ts": "25112024_12:11:43"},
+        {"particle_id": 2, "particle_name": "1s3x", "ts": "25112024_13:01:37"},
+        {"particle_id": 3, "particle_name": "1u6g", "ts": "25112024_13:41:57"},
+        {"particle_id": 4, "particle_name": "4cr2", "ts": "25112024_14:13:39"},
+        {"particle_id": 5, "particle_name": "1qvr", "ts": "25112024_14:52:16"},
+        {"particle_id": 6, "particle_name": "3h84", "ts": "25112024_15:31:45"},
+        {"particle_id": 7, "particle_name": "2cg9", "ts": "25112024_16:27:25"},
+        {"particle_id": 8, "particle_name": "3qm1", "ts": "25112024_17:33:30"},
+        {"particle_id": 9, "particle_name": "3gl1", "ts": "25112024_17:55:20"},
+        {"particle_id": 10, "particle_name": "3d2f", "ts": "25112024_18:35:06"},
+        {"particle_id": 11, "particle_name": "4d8q", "ts": "25112024_18:57:01"},
+        {"particle_id": 12, "particle_name": "1bxn", "ts": "25112024_19:34:50"},
+    ],
+    "grandmodel_1ds_large": [
+        {"particle_id": 8, "particle_name": "3qm1", "ts": "25112024_20:54:46"},
+    ],
 }
 test_ds_name = "model_9"
 
@@ -89,7 +106,7 @@ model_info = MODEL_DICT[MODEL_TYPE]
 model = HeadFinetuneModel(model_type=MODEL_TYPE, device=DEVICE)
 
 
-run_id = "reconstruction_1ds_final_large"
+run_id = "grandmodel_1ds_large"
 base_folder = os.path.join(
     "/media",
     "hdd1",
@@ -120,7 +137,7 @@ for particle_training in particle_ts_mapping.get(run_id):
         DS_ID=test_ds_name,
         device=DEVICE,
         particle_id=particle_training.get("particle_id"),
-        input_type="reconstruction",
+        input_type="grandmodel",
     )
 
     all_predictions = []

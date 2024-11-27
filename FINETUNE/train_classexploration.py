@@ -151,7 +151,9 @@ def train(model, train_dataloader, test_dataloader, epoch, step):
 
 
 if __name__ == "__main__":
-    multi_training_log_path = f"shrec2020_headfinetune_ce_reconstruction_{len(TRAIN_IDs)}ds_final_{MODEL_TYPE}.log"
+    multi_training_log_path = (
+        f"shrec2020_headfinetune_ce_{DATASET_TYPE}_{len(TRAIN_IDs)}ds_{MODEL_TYPE}.log"
+    )
 
     for particle_name, p_id in particle_mapping.items():
         if particle_name == "background":
