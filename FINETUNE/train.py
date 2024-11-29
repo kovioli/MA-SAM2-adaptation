@@ -162,7 +162,7 @@ if __name__ == "__main__":
     optimizer = torch.optim.Adam(model.parameters(), lr=LR)
     scaler = GradScaler()
 
-    timestamp_str = datetime.datetime.now().strftime("%d%m%Y_%H:%M")
+    timestamp_str = datetime.datetime.now().strftime("%d%m%Y_%H:%M:%S")
     print("TIMESTAMP: ", timestamp_str)
     model_save_dir = os.path.join(SAVE_DIR, "checkpoints", timestamp_str)
     os.makedirs(model_save_dir, exist_ok=True)

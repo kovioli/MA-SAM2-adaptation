@@ -16,6 +16,18 @@ TRAIN_ID = "TS_0001"  # training dataset ID
 VAL_ID = "TS_0010"  # validation dataset ID
 SAVE_DIR = "/media/hdd1/oliver/ASDF"  # checkpoint, log, and prediction save directory
 
+# list of datasets to evaluate
+# - name: dataset ID
+# - z_offset: offset to apply for particle coordinate matching (if dataset is cut out along the z-axis from the original tomogram)
+# - target_shape: target shape for the prediction (the input tomogram shape)
+# example:
+# EVAL_DS_LIST = [{"name": "TS_0010", "z_offset": 350, "target_shape": (290, 927, 927)}],
+# where the original tomogram has been cut as orig_tomo[350:350+290, :927, :927]
+EVAL_DS_LIST = [
+    {"name": "TS_0010", "z_offset": 350, "target_shape": (290, 927, 927)},
+]
+
+
 # logging
 LOG_EVERY_STEP = 100
 PATIENCE = 10
